@@ -25,8 +25,6 @@ import socle_qt
 
 APP = "pLUGINSLENS"
 DATA_NAME = "PluginLens"  # réglages et session déjà enregistrés sous ce nom : ne pas renommer
-# Taille des textes (zoom Socle, socle_qt.Zoom) : 1,25 par défaut, le corps passe de 12 à 15 px.
-ZOOM_DEFAULT = 1.25
 MIME = "application/x-pluginlens-record"
 ROLE = Qt.ItemDataRole.UserRole
 SESSION_DIR = os.path.join(os.path.expanduser("~/Library/Application Support"), DATA_NAME, "session")
@@ -40,12 +38,12 @@ def mono_label(text: str, color: str = "accent-text") -> QLabel:
 
 
 def zw(px: int) -> int:
-    """Largeur fixe d'un champ mono, à l'échelle du zoom des textes."""
+    """Largeur fixe d'un champ mono, à l'échelle des textes Socle (110 %)."""
     return round(px * max(1.0, socle_qt.scale()))
 
 
 def compact(b: QPushButton) -> QPushButton:
-    """Bouton bas pour une ligne de l'arbre : sa hauteur suit le texte (zoom) au lieu de la hauteur Socle."""
+    """Bouton bas pour une ligne de l'arbre : sa hauteur suit le texte au lieu de la hauteur Socle."""
     b.setStyleSheet("min-height: 0; padding: 1px 8px;")
     return b
 
@@ -683,15 +681,11 @@ class MainWindow(QMainWindow):
         self.typefilter.setMaximumWidth(220)
         self.typefilter.textChanged.connect(self.change_filter)
         hb.addWidget(self.typefilter)
-        # Statut : prend la place libre et se laisse rogner quand le zoom des textes serre l'en-tête
+        # Statut : prend la place libre et se laisse rogner quand l'en-tête est serré
         self.st = socle_qt.role(QLabel(""), "meta")
         self.st.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Preferred)
         self.st.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
         hb.addWidget(self.st, 1)
-        # ⌥/⌘ + − 0 et boutons A− A+ (Socle)
-        self.zoom = socle_qt.Zoom(self, default=ZOOM_DEFAULT)
-        self.zoom.changed.connect(self._zoom_changed)
-        hb.addWidget(self.zoom.controls())
         root.addWidget(bar)
 
         self.split = QSplitter(Qt.Orientation.Horizontal)
@@ -1073,18 +1067,6 @@ class MainWindow(QMainWindow):
     def change_filter(self, text):
         self.type_filter = [x.strip().upper() for x in text.split(",") if x.strip()]
         self.rebuild_tree()
-
-    def _zoom_changed(self, value: float):
-        """Mémorise le zoom et redessine l'arbre et le détail (polices fixées à la création des éléments)."""
-        self.settings.setValue("zoom", value)
-        self.rebuild_tree()
-        bar = self.detail_scroll.verticalScrollBar()
-        pos = bar.value()
-        if self.cur is not None:
-            self.show_record(self.cur, select=False)
-        else:
-            self.empty_detail(self._empty_text)
-        QTimer.singleShot(0, lambda: bar.setValue(pos))
 
     # ------------------------------------------------------- détail
     def empty_detail(self, text: str | None = None):
@@ -1899,7 +1881,6 @@ def main():
     app = QApplication(sys.argv)
     app.setApplicationName(APP)
     socle_qt.apply(app)
-    socle_qt.set_scale(app, float(QSettings(DATA_NAME, DATA_NAME).value("zoom", ZOOM_DEFAULT)))
     win = MainWindow()
     win.show()
     sys.exit(app.exec())
