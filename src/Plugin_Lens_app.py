@@ -25,6 +25,8 @@ import socle_qt
 
 APP = "pLUGINSLENS"
 DATA_NAME = "PluginLens"  # réglages et session déjà enregistrés sous ce nom : ne pas renommer
+# Taille des textes (zoom Socle, socle_qt.Zoom) : 1,25 par défaut, le corps passe de 12 à 15 px.
+ZOOM_DEFAULT = 1.25
 MIME = "application/x-pluginlens-record"
 ROLE = Qt.ItemDataRole.UserRole
 SESSION_DIR = os.path.join(os.path.expanduser("~/Library/Application Support"), DATA_NAME, "session")
@@ -35,6 +37,17 @@ def mono_label(text: str, color: str = "accent-text") -> QLabel:
     lbl.setFont(socle_qt.font("mono"))
     lbl.setStyleSheet(f"color: {socle_qt.c(color)}; background: transparent;")
     return lbl
+
+
+def zw(px: int) -> int:
+    """Largeur fixe d'un champ mono, à l'échelle du zoom des textes."""
+    return round(px * max(1.0, socle_qt.scale()))
+
+
+def compact(b: QPushButton) -> QPushButton:
+    """Bouton bas pour une ligne de l'arbre : sa hauteur suit le texte (zoom) au lieu de la hauteur Socle."""
+    b.setStyleSheet("min-height: 0; padding: 1px 8px;")
+    return b
 
 
 def small_button(text: str, slot=None, enabled: bool = True) -> QPushButton:
@@ -653,7 +666,7 @@ class MainWindow(QMainWindow):
         hb.setSpacing(socle_qt.m("space-2"))
         hb.addWidget(socle_qt.role(QLabel(APP), "title"))
         self.btn_open = socle_qt.variant(small_button("Ouvrir des plugins", self.open_dialog), "action")
-        self.btn_open.setStyleSheet(f"min-height: {socle_qt.m('size-control') - 2}px; max-height: {socle_qt.m('size-control') - 2}px;")
+        self.btn_open.setStyleSheet(f"min-height: {socle_qt.m('size-control') - 2}px;")
         hb.addWidget(self.btn_open)
         self.q = QLineEdit()
         self.q.setPlaceholderText("Rechercher un EditorID, un FormID ou un type")
@@ -670,9 +683,15 @@ class MainWindow(QMainWindow):
         self.typefilter.setMaximumWidth(220)
         self.typefilter.textChanged.connect(self.change_filter)
         hb.addWidget(self.typefilter)
-        hb.addStretch(1)
+        # Statut : prend la place libre et se laisse rogner quand le zoom des textes serre l'en-tête
         self.st = socle_qt.role(QLabel(""), "meta")
-        hb.addWidget(self.st)
+        self.st.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Preferred)
+        self.st.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
+        hb.addWidget(self.st, 1)
+        # ⌥/⌘ + − 0 et boutons A− A+ (Socle)
+        self.zoom = socle_qt.Zoom(self, default=ZOOM_DEFAULT)
+        self.zoom.changed.connect(self._zoom_changed)
+        hb.addWidget(self.zoom.controls())
         root.addWidget(bar)
 
         self.split = QSplitter(Qt.Orientation.Horizontal)
@@ -901,8 +920,7 @@ class MainWindow(QMainWindow):
         self.tree.addTopLevelItem(head)
         head.setFirstColumnSpanned(True)
         if clear:
-            btn = small_button("Effacer", self.clear_recent)
-            btn.setMaximumHeight(20)
+            btn = compact(small_button("Effacer", self.clear_recent))
             wrap = QWidget()
             lay = QHBoxLayout(wrap)
             lay.setContentsMargins(0, 0, 4, 0)
@@ -910,6 +928,7 @@ class MainWindow(QMainWindow):
             lay.addWidget(btn)
             self.tree.setItemWidget(head, 2, wrap)
             head.setFirstColumnSpanned(False)
+            head.setSizeHint(0, QSize(0, wrap.sizeHint().height()))
         for r in recs:
             head.addChild(self.record_item(r, show_plugin=len(self.ws.plugins) > 1, register=False))
         head.setExpanded(True)
@@ -981,11 +1000,12 @@ class MainWindow(QMainWindow):
         wrap._lock = small_button("", lambda: self.toggle_lock(P))
         wrap._close = small_button("Fermer", lambda: self.close_plugin(P))
         for b in (wrap._lock, wrap._close):
-            b.setMaximumHeight(22)
+            compact(b)
         lay.addWidget(wrap._lab, 1)
         lay.addWidget(wrap._lock)
         lay.addWidget(wrap._close)
         self.tree.setItemWidget(it, 0, wrap)
+        it.setSizeHint(0, QSize(0, wrap.sizeHint().height()))
         it._wrap = wrap
         self.plugin_items[id(P)] = it
         self.paint_plugin_item(it, P)
@@ -1054,8 +1074,21 @@ class MainWindow(QMainWindow):
         self.type_filter = [x.strip().upper() for x in text.split(",") if x.strip()]
         self.rebuild_tree()
 
+    def _zoom_changed(self, value: float):
+        """Mémorise le zoom et redessine l'arbre et le détail (polices fixées à la création des éléments)."""
+        self.settings.setValue("zoom", value)
+        self.rebuild_tree()
+        bar = self.detail_scroll.verticalScrollBar()
+        pos = bar.value()
+        if self.cur is not None:
+            self.show_record(self.cur, select=False)
+        else:
+            self.empty_detail(self._empty_text)
+        QTimer.singleShot(0, lambda: bar.setValue(pos))
+
     # ------------------------------------------------------- détail
     def empty_detail(self, text: str | None = None):
+        self._empty_text = text
         w = QWidget()
         lay = QVBoxLayout(w)
         lay.addStretch(1)
@@ -1165,7 +1198,7 @@ class MainWindow(QMainWindow):
         box.addWidget(socle_qt.role(QLabel(name), "subtle"))
         inp = QLineEdit(pc.hexs(value))
         inp.setFont(socle_qt.font("mono"))
-        inp.setFixedWidth(130)
+        inp.setFixedWidth(zw(130))
         inp.setEnabled(not (self.cur and self.cur.plugin.locked))
 
         def edited(text):
@@ -1277,7 +1310,7 @@ class MainWindow(QMainWindow):
             t = self.ws.resolve(P, v)
             row = QHBoxLayout()
             ix = mono_label(f"{i + 1}.", "text-subtle")
-            ix.setFixedWidth(36)
+            ix.setFixedWidth(zw(36))
             ix.setAlignment(Qt.AlignmentFlag.AlignRight)
             row.addWidget(ix)
             row.addWidget(mono_label("invalide" if v is None else pc.hexs(v)))
@@ -1361,7 +1394,7 @@ class MainWindow(QMainWindow):
         row.addWidget(QLabel("Valeur"))
         v = self.ws.glob_value(r)
         vin = QLineEdit("" if v is None else repr(v) if v != int(v) else str(int(v)) if abs(v) < 1e15 else repr(v))
-        vin.setFixedWidth(140)
+        vin.setFixedWidth(zw(140))
         vin.setEnabled(not P.locked)
 
         def vchange(text):
@@ -1866,6 +1899,7 @@ def main():
     app = QApplication(sys.argv)
     app.setApplicationName(APP)
     socle_qt.apply(app)
+    socle_qt.set_scale(app, float(QSettings(DATA_NAME, DATA_NAME).value("zoom", ZOOM_DEFAULT)))
     win = MainWindow()
     win.show()
     sys.exit(app.exec())
