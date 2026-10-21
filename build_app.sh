@@ -38,6 +38,14 @@ ICON_ARGS=()
   "$SRC"
 
 mv "$WORK/dist/${APP_NAME}.app" "$ROOT/${APP_NAME}.app"
-"$(cd "$ROOT/.." && pwd)/_tools/sign_app.sh" "$ROOT/${APP_NAME}.app" 1.0.0  # signature stable (_tools)
+# Signature stable avec _tools/sign_app.sh (certificat local) ; sans lui (compilation depuis
+# le dépôt GitHub seul), signature ad hoc pour que l'appli se lance quand même.
+SIGN_APP="$(cd "$ROOT/.." && pwd)/_tools/sign_app.sh"
+if [ -x "$SIGN_APP" ]; then
+    "$SIGN_APP" "$ROOT/${APP_NAME}.app" 1.0.0
+else
+    echo "_tools/sign_app.sh absent : signature ad hoc."
+    codesign --force --deep --sign - "$ROOT/${APP_NAME}.app"
+fi
 
 echo "OK : $ROOT/${APP_NAME}.app"
