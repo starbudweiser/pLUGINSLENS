@@ -1,0 +1,349 @@
+"""Traductions : {texte français: (anglais, italien, espagnol)}.
+
+Les placeholders {x} doivent rester identiques dans toutes les langues (vérifié par
+tests/test_i18n.py).
+"""
+
+TR = {
+    # ------------------------------------------------------------ fenêtre, menus
+    "{APP} · éditeur ESP/ESM": ("{APP} · ESP/ESM editor", "{APP} · editor ESP/ESM", "{APP} · editor ESP/ESM"),
+    "Ouvrir des plugins": ("Open plugins", "Apri plugin", "Abrir plugins"),
+    "Rechercher un EditorID, un FormID ou un type": (
+        "Search for an EditorID, a FormID or a type", "Cerca un EditorID, un FormID o un tipo", "Buscar un EditorID, un FormID o un tipo"),
+    "Ordre du fichier": ("File order", "Ordine del file", "Orden del archivo"),
+    "Tri : EditorID": ("Sort: EditorID", "Ordina: EditorID", "Orden: EditorID"),
+    "Tri : FormID": ("Sort: FormID", "Ordina: FormID", "Orden: FormID"),
+    "Filtrer les groupes : WEAP, ARMO…": ("Filter groups: WEAP, ARMO…", "Filtra i gruppi: WEAP, ARMO…", "Filtrar grupos: WEAP, ARMO…"),
+    "Fichier": ("File", "File", "Archivo"),
+    "Ouvrir des plugins…": ("Open plugins…", "Apri plugin…", "Abrir plugins…"),
+    "Enregistrer une copie…": ("Save a copy…", "Salva una copia…", "Guardar una copia…"),
+    "Fermer le plugin actif": ("Close the active plugin", "Chiudi il plugin attivo", "Cerrar el plugin activo"),
+    "Verrouiller / déverrouiller le plugin actif": (
+        "Lock / unlock the active plugin", "Blocca / sblocca il plugin attivo", "Bloquear / desbloquear el plugin activo"),
+    "Mémoriser les plugins entre les sessions": (
+        "Remember plugins between sessions", "Ricorda i plugin tra le sessioni", "Recordar los plugins entre sesiones"),
+    "Édition": ("Edit", "Modifica", "Edición"),
+    "Annuler la modification": ("Undo", "Annulla", "Deshacer"),
+    "Rétablir": ("Redo", "Ripristina", "Rehacer"),
+    "Copier les enregistrements": ("Copy records", "Copia i record", "Copiar los registros"),
+    "Coller les enregistrements": ("Paste records", "Incolla i record", "Pegar los registros"),
+    "Nouvelle FormList…": ("New FormList…", "Nuova FormList…", "Nueva FormList…"),
+    "Outils": ("Tools", "Strumenti", "Herramientas"),
+    "Doublons…": ("Duplicates…", "Duplicati…", "Duplicados…"),
+    "Comparer deux plugins…": ("Compare two plugins…", "Confronta due plugin…", "Comparar dos plugins…"),
+    "Comparer deux enregistrements…": ("Compare two records…", "Confronta due record…", "Comparar dos registros…"),
+    "Statistiques…": ("Statistics…", "Statistiche…", "Estadísticas…"),
+    "Journal des modifications…": ("Change log…", "Registro delle modifiche…", "Registro de cambios…"),
+    "Affichage": ("View", "Vista", "Ver"),
+    "Afficher l'arbre": ("Show tree", "Mostra l'albero", "Mostrar el árbol"),
+    "Espaces de travail": ("Workspaces", "Aree di lavoro", "Espacios de trabajo"),
+    "Enregistrer l'espace de travail…": ("Save workspace…", "Salva l'area di lavoro…", "Guardar el espacio de trabajo…"),
+    "Langue : {name}": ("Language: {name}", "Lingua: {name}", "Idioma: {name}"),
+    "Automatique ({lang})": ("Automatic ({lang})", "Automatica ({lang})", "Automático ({lang})"),
+    "La langue sera appliquée au prochain lancement de {app}. Relancer maintenant ?": (
+        "The language will apply the next time {app} starts. Restart now?",
+        "La lingua verrà applicata al prossimo avvio di {app}. Riavviare ora?",
+        "El idioma se aplicará la próxima vez que se inicie {app}. ¿Reiniciar ahora?"),
+    # ------------------------------------------------------------ boutons communs
+    "Annuler": ("Cancel", "Annulla", "Cancelar"),
+    "Fermer": ("Close", "Chiudi", "Cerrar"),
+    "Retirer": ("Remove", "Rimuovi", "Quitar"),
+    "Choisir…": ("Choose…", "Scegli…", "Elegir…"),
+    "Changer…": ("Change…", "Cambia…", "Cambiar…"),
+    "Effacer": ("Clear", "Cancella", "Borrar"),
+    "Comparer": ("Compare", "Confronta", "Comparar"),
+    "Importer…": ("Import…", "Importa…", "Importar…"),
+    "Exporter…": ("Export…", "Esporta…", "Exportar…"),
+    "Monter": ("Up", "Su", "Subir"),
+    "Descendre": ("Down", "Giù", "Bajar"),
+    "Cloner": ("Clone", "Clona", "Clonar"),
+    "Supprimer": ("Delete", "Elimina", "Eliminar"),
+    "Épingler": ("Pin", "Fissa", "Fijar"),
+    "Désépingler": ("Unpin", "Rimuovi fissaggio", "Desfijar"),
+    "Verrouiller": ("Lock", "Blocca", "Bloquear"),
+    "Déverrouiller": ("Unlock", "Sblocca", "Desbloquear"),
+    "Où est-il utilisé ?": ("Where is it used?", "Dove viene usato?", "¿Dónde se usa?"),
+    "Ajouter un sous-enregistrement": ("Add a subrecord", "Aggiungi un sottorecord", "Añadir un subregistro"),
+    "Ajouter un mot-clé…": ("Add a keyword…", "Aggiungi una parola chiave…", "Añadir una palabra clave…"),
+    "Trier par nom": ("Sort by name", "Ordina per nome", "Ordenar por nombre"),
+    "Trier par FormID": ("Sort by FormID", "Ordina per FormID", "Ordenar por FormID"),
+    "Retirer les doublons": ("Remove duplicates", "Rimuovi i duplicati", "Quitar duplicados"),
+    "Retirer les entrées cassées": ("Remove broken entries", "Rimuovi le voci non valide", "Quitar las entradas rotas"),
+    # ------------------------------------------------------------ arbre, accueil, statut
+    "Récemment consultés": ("Recently viewed", "Visti di recente", "Vistos recientemente"),
+    "Épinglés": ("Pinned", "Fissati", "Fijados"),
+    "Aucun résultat": ("No results", "Nessun risultato", "Sin resultados"),
+    "Seuls les 300 premiers résultats sont affichés. Affinez la recherche.": (
+        "Only the first 300 results are shown. Refine your search.",
+        "Sono mostrati solo i primi 300 risultati. Affina la ricerca.",
+        "Solo se muestran los 300 primeros resultados. Afina la búsqueda."),
+    "Glissez un ou plusieurs fichiers .ESP, .ESM ou .ESL ici": (
+        "Drop one or more .ESP, .ESM or .ESL files here",
+        "Trascina qui uno o più file .ESP, .ESM o .ESL",
+        "Arrastra aquí uno o varios archivos .ESP, .ESM o .ESL"),
+    "Tout est analysé localement. Aucune installation de Skyrim n'est nécessaire.": (
+        "Everything is analyzed locally. No Skyrim installation is required.",
+        "Tutto viene analizzato in locale. Non serve un'installazione di Skyrim.",
+        "Todo se analiza localmente. No hace falta tener Skyrim instalado."),
+    "Aucun fichier chargé": ("No file loaded", "Nessun file caricato", "Ningún archivo cargado"),
+    "{name} · {v:,} enregistrements · {n} maîtres": (
+        "{name} · {v:,} records · {n} masters", "{name} · {v:,} record · {n} master", "{name} · {v:,} registros · {n} másteres"),
+    " · modifié": (" · modified", " · modificato", " · modificado"),
+    " · {n} plugins ouverts": (" · {n} plugins open", " · {n} plugin aperti", " · {n} plugins abiertos"),
+    "{n} plugins ouverts": ("{n} plugins open", "{n} plugin aperti", "{n} plugins abiertos"),
+    "   (verrouillé)": ("   (locked)", "   (bloccato)", "   (bloqueado)"),
+    "  (verrouillé)": ("  (locked)", "  (bloccato)", "  (bloqueado)"),
+    "{n} enregistrements sélectionnés. Glissez-les sur une FormList.": (
+        "{n} records selected. Drag them onto a FormList.",
+        "{n} record selezionati. Trascinali su una FormList.",
+        "{n} registros seleccionados. Arrástralos a una FormList."),
+    "Analyse de {name}…": ("Analyzing {name}…", "Analisi di {name}…", "Analizando {name}…"),
+    "Aucune sélection.": ("No selection.", "Nessuna selezione.", "Ninguna selección."),
+    # ------------------------------------------------------------ fiche d'un enregistrement
+    "{name} est verrouillé. Déverrouillez-le depuis l'arbre pour le modifier.": (
+        "{name} is locked. Unlock it from the tree to edit it.",
+        "{name} è bloccato. Sbloccalo dall'albero per modificarlo.",
+        "{name} está bloqueado. Desbloquéalo desde el árbol para modificarlo."),
+    "{name} est verrouillé : déverrouillez-le pour le modifier.": (
+        "{name} is locked: unlock it to edit it.", "{name} è bloccato: sbloccalo per modificarlo.", "{name} está bloqueado: desbloquéalo para modificarlo."),
+    "FormID (hex)": ("FormID (hex)", "FormID (hex)", "FormID (hex)"),
+    "Flags (hex)": ("Flags (hex)", "Flag (hex)", "Flags (hex)"),
+    "{name} · Propriétaire : {owner}": ("{name} · Owner: {owner}", "{name} · Proprietario: {owner}", "{name} · Propietario: {owner}"),
+    " (ce fichier)": (" (this file)", " (questo file)", " (este archivo)"),
+    "Type de sous-enregistrement (quatre caractères, ex. FULL) :": (
+        "Subrecord type (four characters, e.g. FULL):",
+        "Tipo di sottorecord (quattro caratteri, es. FULL):",
+        "Tipo de subregistro (cuatro caracteres, p. ej. FULL):"),
+    "Supprimer cet enregistrement ? Les enregistrements qui y font référence seront cassés.": (
+        "Delete this record? Records that reference it will be broken.",
+        "Eliminare questo record? I record che vi fanno riferimento saranno danneggiati.",
+        "¿Eliminar este registro? Los registros que lo referencian quedarán rotos."),
+    "Enregistrement supprimé.": ("Record deleted.", "Record eliminato.", "Registro eliminado."),
+    "Cloné en {hexs}": ("Cloned as {hexs}", "Clonato come {hexs}", "Clonado como {hexs}"),
+    "Hexadécimal": ("Hexadecimal", "Esadecimale", "Hexadecimal"),
+    "Texte": ("Text", "Testo", "Texto"),
+    "{n} octets": ("{n} bytes", "{n} byte", "{n} bytes"),
+    "Type": ("Type", "Tipo", "Tipo"),
+    "FormID": ("FormID", "FormID", "FormID"),
+    "Flags": ("Flags", "Flag", "Flags"),
+    "Propriétaire": ("Owner", "Proprietario", "Propietario"),
+    "Valeur": ("Value", "Valore", "Valor"),
+    "Activé": ("Enabled", "Attivato", "Activado"),
+    "Désactivé": ("Disabled", "Disattivato", "Desactivado"),
+    # drapeaux d'enregistrement et d'en-tête
+    "Supprimé": ("Deleted", "Eliminato", "Eliminado"),
+    "Persistant (surtout REFR)": ("Persistent (mostly REFR)", "Persistente (soprattutto REFR)", "Persistente (sobre todo REFR)"),
+    "Désactivé au départ": ("Initially disabled", "Disattivato all'inizio", "Desactivado al inicio"),
+    "Ignoré": ("Ignored", "Ignorato", "Ignorado"),
+    "Compressé": ("Compressed", "Compresso", "Comprimido"),
+    "Fichier maître": ("Master file", "File master", "Archivo máster"),
+    "Chaînes localisées": ("Localized strings", "Stringhe localizzate", "Cadenas localizadas"),
+    "Maître léger (ESL)": ("Light master (ESL)", "Master leggero (ESL)", "Máster ligero (ESL)"),
+    # ------------------------------------------------------------ FormList, globales, mots-clés
+    "Entrées ({n}). Glissez des enregistrements depuis l'arbre, y compris d'autres plugins ouverts.": (
+        "Entries ({n}). Drag records from the tree, including from other open plugins.",
+        "Voci ({n}). Trascina record dall'albero, anche da altri plugin aperti.",
+        "Entradas ({n}). Arrastra registros desde el árbol, incluso de otros plugins abiertos."),
+    "Vide. Déposez des enregistrements ici.": ("Empty. Drop records here.", "Vuota. Trascina qui dei record.", "Vacía. Suelta registros aquí."),
+    "invalide": ("invalid", "non valido", "no válido"),
+    "L'entrée ne fait pas 4 octets": ("The entry is not 4 bytes long", "La voce non è di 4 byte", "La entrada no mide 4 bytes"),
+    "de {v} (non ouvert)": ("from {v} (not open)", "da {v} (non aperto)", "de {v} (no abierto)"),
+    "introuvable dans ce fichier": ("not found in this file", "non trovato in questo file", "no encontrado en este archivo"),
+    "de {master}": ("from {master}", "da {master}", "de {master}"),
+    "introuvable": ("not found", "non trovato", "no encontrado"),
+    "Importer dans {label}": ("Import into {label}", "Importa in {label}", "Importar en {label}"),
+    "Un EditorID ou un FormID hexadécimal à 8 chiffres par ligne. Les FormID suivent la numérotation de ce plugin. Les lignes commençant par # sont ignorées.": (
+        "One EditorID or 8-digit hexadecimal FormID per line. FormIDs follow this plugin's numbering. Lines starting with # are ignored.",
+        "Un EditorID o un FormID esadecimale a 8 cifre per riga. I FormID seguono la numerazione di questo plugin. Le righe che iniziano con # vengono ignorate.",
+        "Un EditorID o un FormID hexadecimal de 8 dígitos por línea. Los FormID siguen la numeración de este plugin. Las líneas que empiezan por # se ignoran."),
+    "Exporter {label}": ("Export {label}", "Esporta {label}", "Exportar {label}"),
+    "EditorID quand il est connu, sinon FormID hexadécimal.": (
+        "EditorID when known, otherwise hexadecimal FormID.",
+        "EditorID se noto, altrimenti FormID esadecimale.",
+        "EditorID cuando se conoce; si no, FormID hexadecimal."),
+    "{v} entrée(s) ajoutée(s)": ("{v} entry(ies) added", "{v} voce/i aggiunta/e", "{v} entrada(s) añadida(s)"),
+    "{k} entrée(s) retirée(s)": ("{k} entry(ies) removed", "{k} voce/i rimossa/e", "{k} entrada(s) quitada(s)"),
+    "Introuvables ({n}) :\n": ("Not found ({n}):\n", "Non trovati ({n}):\n", "No encontrados ({n}):\n"),
+    "Variable globale": ("Global variable", "Variabile globale", "Variable global"),
+    "Toutes les globales stockent leur valeur en flottant, quel que soit leur type.": (
+        "All globals store their value as a float, whatever their type.",
+        "Tutte le globali memorizzano il valore come float, qualunque sia il tipo.",
+        "Todas las globales guardan su valor como float, sea cual sea su tipo."),
+    "Mots-clés ({n})": ("Keywords ({n})", "Parole chiave ({n})", "Palabras clave ({n})"),
+    "Ce mot-clé est déjà présent": ("This keyword is already present", "Questa parola chiave è già presente", "Esta palabra clave ya está presente"),
+    "Choisir un enregistrement": ("Choose a record", "Scegli un record", "Elegir un registro"),
+    "Choisir un enregistrement…": ("Choose a record…", "Scegli un record…", "Elegir un registro…"),
+    "EditorID, FormID ou type": ("EditorID, FormID or type", "EditorID, FormID o tipo", "EditorID, FormID o tipo"),
+    "Saisissez une recherche…": ("Type a search…", "Digita una ricerca…", "Escribe una búsqueda…"),
+    "Recherche dans tous les plugins ouverts.": (
+        "Searches all open plugins.", "Cerca in tutti i plugin aperti.", "Busca en todos los plugins abiertos."),
+    "Ajouter {need} comme maître de {name} ?": ("Add {need} as a master of {name}?", "Aggiungere {need} come master di {name}?", "¿Añadir {need} como máster de {name}?"),
+    "Ajouter {o} comme maître de {name} ?": ("Add {o} as a master of {name}?", "Aggiungere {o} come master di {name}?", "¿Añadir {o} como máster de {name}?"),
+    "{n} enregistrement(s) ajouté(s) à {label}": (
+        "{n} record(s) added to {label}", "{n} record aggiunto/i a {label}", "{n} registro(s) añadido(s) a {label}"),
+    " ({dup} déjà dans la liste)": (" ({dup} already in the list)", " ({dup} già nell'elenco)", " ({dup} ya en la lista)"),
+    # ------------------------------------------------------------ journal des modifications (entrées)
+    "Modifié {t} dans {label}": ("Modified {t} in {label}", "Modificato {t} in {label}", "Modificado {t} en {label}"),
+    "Modifié {t} sur {label} (côte à côte)": (
+        "Modified {t} on {label} (side by side)", "Modificato {t} su {label} (affiancati)", "Modificado {t} en {label} (lado a lado)"),
+    "{t} défini sur {label} via le sélecteur": (
+        "{t} set on {label} via the picker", "{t} impostato su {label} tramite il selettore", "{t} definido en {label} mediante el selector"),
+    "{t} défini sur {label} par glisser": (
+        "{t} set on {label} by dragging", "{t} impostato su {label} trascinando", "{t} definido en {label} arrastrando"),
+    "Retiré {t} de {label}": ("Removed {t} from {label}", "Rimosso {t} da {label}", "Quitado {t} de {label}"),
+    "Ajouté {t} à {label}": ("Added {t} to {label}", "Aggiunto {t} a {label}", "Añadido {t} a {label}"),
+    "Ajouté {tag} à {label} par glisser": ("Added {tag} to {label} by dragging", "Aggiunto {tag} a {label} trascinando", "Añadido {tag} a {label} arrastrando"),
+    "Copié {tag} depuis {frm} (côte à côte)": (
+        "Copied {tag} from {frm} (side by side)", "Copiato {tag} da {frm} (affiancati)", "Copiado {tag} desde {frm} (lado a lado)"),
+    "{v} modifié (côte à côte)": ("{v} modified (side by side)", "{v} modificato (affiancati)", "{v} modificado (lado a lado)"),
+    "{v} « {name} » sur {label}": ("{v} “{name}” on {label}", "{v} «{name}» su {label}", "{v} «{name}» en {label}"),
+    "Cloné {label} en {hexs}": ("Cloned {label} as {hexs}", "Clonato {label} come {hexs}", "Clonado {label} como {hexs}"),
+    "Supprimé {t} {label}": ("Deleted {t} {label}", "Eliminato {t} {label}", "Eliminado {t} {label}"),
+    "Entrées réordonnées dans {label}": ("Entries reordered in {label}", "Voci riordinate in {label}", "Entradas reordenadas en {label}"),
+    "Doublons retirés de {label}": ("Duplicates removed from {label}", "Duplicati rimossi da {label}", "Duplicados quitados de {label}"),
+    "Entrées cassées retirées de {label}": ("Broken entries removed from {label}", "Voci non valide rimosse da {label}", "Entradas rotas quitadas de {label}"),
+    "Ajouté {n} entrée(s) à {label}": ("Added {n} entry(ies) to {label}", "Aggiunta/e {n} voce/i a {label}", "Añadida(s) {n} entrada(s) a {label}"),
+    "Importé {raw} entrée(s) brute(s) dans {label}": (
+        "Imported {raw} raw entry(ies) into {label}", "Importata/e {raw} voce/i grezza/e in {label}", "Importada(s) {raw} entrada(s) en bruto en {label}"),
+    "Type modifié pour {label}": ("Type changed for {label}", "Tipo modificato per {label}", "Tipo modificado para {label}"),
+    "Valeur modifiée pour {label}": ("Value changed for {label}", "Valore modificato per {label}", "Valor modificado para {label}"),
+    "Mots-clés modifiés sur {label}": ("Keywords changed on {label}", "Parole chiave modificate su {label}", "Palabras clave modificadas en {label}"),
+    "Ajouté {n} mot(s)-clé(s) à {label}": ("Added {n} keyword(s) to {label}", "Aggiunta/e {n} parola/e chiave a {label}", "Añadida(s) {n} palabra(s) clave a {label}"),
+    "Mot-clé ajouté à {label}": ("Keyword added to {label}", "Parola chiave aggiunta a {label}", "Palabra clave añadida a {label}"),
+    "Mot-clé retiré de {label}": ("Keyword removed from {label}", "Parola chiave rimossa da {label}", "Palabra clave quitada de {label}"),
+    "Collé {n} enregistrement(s)": ("Pasted {n} record(s)", "Incollato/i {n} record", "Pegado(s) {n} registro(s)"),
+    # ------------------------------------------------------------ fichiers et session
+    "Plugins Skyrim (*.esp *.esm *.esl)": ("Skyrim plugins (*.esp *.esm *.esl)", "Plugin di Skyrim (*.esp *.esm *.esl)", "Plugins de Skyrim (*.esp *.esm *.esl)"),
+    "Enregistrer une copie": ("Save a copy", "Salva una copia", "Guardar una copia"),
+    "Copie de {name} enregistrée": ("Copy of {name} saved", "Copia di {name} salvata", "Copia de {name} guardada"),
+    "Impossible de lire {basename} : {strerror}": ("Cannot read {basename}: {strerror}", "Impossibile leggere {basename}: {strerror}", "No se puede leer {basename}: {strerror}"),
+    "Impossible de lire {name} : {e}": ("Cannot read {name}: {e}", "Impossibile leggere {name}: {e}", "No se puede leer {name}: {e}"),
+    "Impossible d'enregistrer : {strerror}. Vérifiez les droits d'écriture du dossier.": (
+        "Cannot save: {strerror}. Check the folder's write permissions.",
+        "Impossibile salvare: {strerror}. Controlla i permessi di scrittura della cartella.",
+        "No se puede guardar: {strerror}. Comprueba los permisos de escritura de la carpeta."),
+    "{name} est déjà ouvert": ("{name} is already open", "{name} è già aperto", "{name} ya está abierto"),
+    "{name} a des modifications non enregistrées. Le fermer quand même ?": (
+        "{name} has unsaved changes. Close it anyway?",
+        "{name} ha modifiche non salvate. Chiuderlo comunque?",
+        "{name} tiene cambios sin guardar. ¿Cerrarlo de todos modos?"),
+    " ({others} autre(s) plugin(s) ont aussi des modifications non enregistrées.)": (
+        " ({others} other plugin(s) also have unsaved changes.)",
+        " (anche {others} altro/i plugin ha/hanno modifiche non salvate.)",
+        " (otros {others} plugin(s) también tienen cambios sin guardar.)"),
+    "Plugin fermé.": ("Plugin closed.", "Plugin chiuso.", "Plugin cerrado."),
+    "{name} verrouillé": ("{name} locked", "{name} bloccato", "{name} bloqueado"),
+    "{name} déverrouillé": ("{name} unlocked", "{name} sbloccato", "{name} desbloqueado"),
+    "Des plugins ont des modifications non enregistrées :\n": (
+        "Some plugins have unsaved changes:\n", "Alcuni plugin hanno modifiche non salvate:\n", "Algunos plugins tienen cambios sin guardar:\n"),
+    "\n\nQuitter quand même ?": ("\n\nQuit anyway?", "\n\nUscire comunque?", "\n\n¿Salir de todos modos?"),
+    "{n} plugin(s) restauré(s) depuis votre dernière session": (
+        "{n} plugin(s) restored from your last session", "{n} plugin ripristinato/i dall'ultima sessione", "{n} plugin(s) restaurado(s) de tu última sesión"),
+    "Ouvrez d'abord des plugins": ("Open some plugins first", "Apri prima dei plugin", "Abre primero algunos plugins"),
+    "Nom de l'espace de travail (les plugins ouverts) :": (
+        "Workspace name (the open plugins):", "Nome dell'area di lavoro (i plugin aperti):", "Nombre del espacio de trabajo (los plugins abiertos):"),
+    "Espace de travail « {name} » enregistré": ("Workspace “{name}” saved", "Area di lavoro «{name}» salvata", "Espacio de trabajo «{name}» guardado"),
+    "Espace de travail « {name} » chargé": ("Workspace “{name}” loaded", "Area di lavoro «{name}» caricata", "Espacio de trabajo «{name}» cargado"),
+    "Ces plugins font partie de « {name} » mais ne sont pas mémorisés : rouvrez-les manuellement.\n": (
+        "These plugins are part of “{name}” but are not remembered: reopen them manually.\n",
+        "Questi plugin fanno parte di «{name}» ma non sono memorizzati: riaprili manualmente.\n",
+        "Estos plugins forman parte de «{name}» pero no están memorizados: vuelve a abrirlos manualmente.\n"),
+    # ------------------------------------------------------------ édition
+    "Dernière modification annulée": ("Last change undone", "Ultima modifica annullata", "Último cambio deshecho"),
+    "Modification rétablie": ("Change redone", "Modifica ripristinata", "Cambio rehecho"),
+    "Seuls les enregistrements de premier niveau peuvent être copiés, pas le contenu des cellules": (
+        "Only top-level records can be copied, not the contents of cells",
+        "Si possono copiare solo i record di primo livello, non il contenuto delle celle",
+        "Solo se pueden copiar los registros de primer nivel, no el contenido de las celdas"),
+    "Sélectionnez d'abord des enregistrements": ("Select some records first", "Seleziona prima dei record", "Selecciona primero algunos registros"),
+    "{n} enregistrement(s) copié(s)": ("{n} record(s) copied", "{n} record copiato/i", "{n} registro(s) copiado(s)"),
+    " ({skipped} ignoré(s))": (" ({skipped} skipped)", " ({skipped} ignorato/i)", " ({skipped} omitido(s))"),
+    "Rien n'a encore été copié": ("Nothing has been copied yet", "Non è ancora stato copiato nulla", "Todavía no se ha copiado nada"),
+    "{n} enregistrement(s) collé(s) dans {name}": ("{n} record(s) pasted into {name}", "{n} record incollato/i in {name}", "{n} registro(s) pegado(s) en {name}"),
+    "EditorID de la nouvelle FormList dans {name} :": (
+        "EditorID of the new FormList in {name}:", "EditorID della nuova FormList in {name}:", "EditorID de la nueva FormList en {name}:"),
+    "Un enregistrement porte déjà cet EditorID. Créer quand même ?": (
+        "A record already has this EditorID. Create anyway?",
+        "Un record ha già questo EditorID. Crearlo comunque?",
+        "Un registro ya tiene este EditorID. ¿Crearlo de todos modos?"),
+    # ------------------------------------------------------------ outils
+    "Comparer deux enregistrements": ("Compare two records", "Confronta due record", "Comparar dos registros"),
+    "Choisissez deux enregistrements, ou glissez-les ici depuis l'arbre. Glissez la poignée ⠿ d'un champ pour copier sa valeur de l'autre côté.": (
+        "Choose two records, or drag them here from the tree. Drag a field's ⠿ handle to copy its value to the other side.",
+        "Scegli due record o trascinali qui dall'albero. Trascina la maniglia ⠿ di un campo per copiarne il valore sull'altro lato.",
+        "Elige dos registros o arrástralos aquí desde el árbol. Arrastra el asa ⠿ de un campo para copiar su valor al otro lado."),
+    "Enregistrement A": ("Record A", "Record A", "Registro A"),
+    "Enregistrement B": ("Record B", "Record B", "Registro B"),
+    "(absent)": ("(missing)", "(assente)", "(ausente)"),
+    "Glissez sur l'autre côté pour y copier ce champ": (
+        "Drag to the other side to copy this field there",
+        "Trascina sull'altro lato per copiarvi questo campo",
+        "Arrastra al otro lado para copiar allí este campo"),
+    "Où est utilisé : {label}": ("Where used: {label}", "Dove è usato: {label}", "Dónde se usa: {label}"),
+    "Heuristique : tout sous-enregistrement de 4 octets dont la valeur égale ce FormID (renuméroté pour chaque plugin). Peut inclure des faux positifs et ignore les champs qui ne font pas 4 octets.": (
+        "Heuristic: any 4-byte subrecord whose value equals this FormID (renumbered for each plugin). May include false positives and ignores fields that are not 4 bytes long.",
+        "Euristica: qualsiasi sottorecord di 4 byte il cui valore è uguale a questo FormID (rinumerato per ogni plugin). Può includere falsi positivi e ignora i campi che non sono di 4 byte.",
+        "Heurística: cualquier subregistro de 4 bytes cuyo valor sea igual a este FormID (renumerado para cada plugin). Puede incluir falsos positivos e ignora los campos que no miden 4 bytes."),
+    "Aucun enregistrement ouvert n'a de champ de 4 octets égal à ce FormID.": (
+        "No open record has a 4-byte field equal to this FormID.",
+        "Nessun record aperto ha un campo di 4 byte uguale a questo FormID.",
+        "Ningún registro abierto tiene un campo de 4 bytes igual a este FormID."),
+    "Des FormID en double dans un même plugin sont invalides et doivent être corrigés. Des EditorID partagés entre plugins sont souvent normaux (surcharges).": (
+        "Duplicate FormIDs within one plugin are invalid and must be fixed. EditorIDs shared between plugins are often normal (overrides).",
+        "FormID duplicati nello stesso plugin non sono validi e vanno corretti. EditorID condivisi tra plugin sono spesso normali (sovrascritture).",
+        "Los FormID duplicados en un mismo plugin no son válidos y deben corregirse. Los EditorID compartidos entre plugins suelen ser normales (sobrescrituras)."),
+    "FORMID EN DOUBLE DANS UN PLUGIN": ("DUPLICATE FORMIDS WITHIN A PLUGIN", "FORMID DUPLICATI IN UN PLUGIN", "FORMID DUPLICADOS EN UN PLUGIN"),
+    "EDITORID PARTAGÉS (MÊME NOM, ENREGISTREMENTS DIFFÉRENTS)": (
+        "SHARED EDITORIDS (SAME NAME, DIFFERENT RECORDS)",
+        "EDITORID CONDIVISI (STESSO NOME, RECORD DIVERSI)",
+        "EDITORID COMPARTIDOS (MISMO NOMBRE, REGISTROS DISTINTOS)"),
+    "Aucun EditorID ni FormID en double dans les plugins ouverts.": (
+        "No duplicate EditorIDs or FormIDs in the open plugins.",
+        "Nessun EditorID o FormID duplicato nei plugin aperti.",
+        "Ningún EditorID ni FormID duplicado en los plugins abiertos."),
+    "Ouvrez au moins deux plugins pour les comparer": (
+        "Open at least two plugins to compare them", "Apri almeno due plugin per confrontarli", "Abre al menos dos plugins para compararlos"),
+    "Comparer deux plugins": ("Compare two plugins", "Confronta due plugin", "Comparar dos plugins"),
+    "Associe les enregistrements par type et EditorID : idéal pour deux versions d'un même plugin.": (
+        "Matches records by type and EditorID: ideal for two versions of the same plugin.",
+        "Abbina i record per tipo ed EditorID: ideale per due versioni dello stesso plugin.",
+        "Empareja los registros por tipo y EditorID: ideal para dos versiones del mismo plugin."),
+    "Choisissez deux plugins différents.": ("Choose two different plugins.", "Scegli due plugin diversi.", "Elige dos plugins distintos."),
+    "Seulement dans {name}": ("Only in {name}", "Solo in {name}", "Solo en {name}"),
+    "Modifiés (même EditorID, sous-enregistrements différents)": (
+        "Modified (same EditorID, different subrecords)",
+        "Modificati (stesso EditorID, sottorecord diversi)",
+        "Modificados (mismo EditorID, subregistros distintos)"),
+    "Aucune différence trouvée par EditorID.": ("No differences found by EditorID.", "Nessuna differenza trovata per EditorID.", "No se encontraron diferencias por EditorID."),
+    "Enregistrements : {v:,}": ("Records: {v:,}", "Record: {v:,}", "Registros: {v:,}"),
+    "Maîtres : ": ("Masters: ", "Master: ", "Másteres: "),
+    "aucun": ("none", "nessuno", "ninguno"),
+    "ENREGISTREMENTS PAR TYPE": ("RECORDS BY TYPE", "RECORD PER TIPO", "REGISTROS POR TIPO"),
+    "Journal des modifications — {name}": ("Change log — {name}", "Registro delle modifiche — {name}", "Registro de cambios — {name}"),
+    "Aucune modification enregistrée pendant cette session.": (
+        "No changes recorded during this session.", "Nessuna modifica registrata in questa sessione.", "No se registraron cambios en esta sesión."),
+    "Session en cours uniquement.": ("Current session only.", "Solo la sessione corrente.", "Solo la sesión actual."),
+    # ------------------------------------------------------------ cœur (plugin_core)
+    "en-tête TES4 absent : ce n'est pas un plugin au format Skyrim": (
+        "TES4 header missing: this is not a Skyrim-format plugin",
+        "intestazione TES4 assente: non è un plugin in formato Skyrim",
+        "falta la cabecera TES4: no es un plugin con formato de Skyrim"),
+    "{o} dépend de {name} : en faire un maître de {name} serait circulaire.": (
+        "{o} depends on {name}: making it a master of {name} would be circular.",
+        "{o} dipende da {name}: renderlo un master di {name} sarebbe circolare.",
+        "{o} depende de {name}: convertirlo en máster de {name} sería circular."),
+    "{name} ne déclare pas {o} comme maître et contient d'autres enregistrements que des FormLists. Un maître ne peut être ajouté sans risque qu'à un plugin composé de FormLists, car les références internes des autres enregistrements devraient être renumérotées. Ajoutez le maître dans xEdit, puis rouvrez le plugin ici.": (
+        "{name} does not declare {o} as a master and contains records other than FormLists. A master can only be added safely to a plugin made of FormLists, because the internal references of other records would have to be renumbered. Add the master in xEdit, then reopen the plugin here.",
+        "{name} non dichiara {o} come master e contiene record diversi dalle FormList. Un master si può aggiungere senza rischi solo a un plugin composto da FormList, perché i riferimenti interni degli altri record andrebbero rinumerati. Aggiungi il master in xEdit, poi riapri qui il plugin.",
+        "{name} no declara {o} como máster y contiene registros que no son FormLists. Solo se puede añadir un máster sin riesgo a un plugin compuesto de FormLists, porque habría que renumerar las referencias internas de los demás registros. Añade el máster en xEdit y vuelve a abrir aquí el plugin."),
+    "Trop de maîtres.": ("Too many masters.", "Troppi master.", "Demasiados másteres."),
+    "Ce plugin marqué ESL n'a plus de FormID libre (limite 0xFFF).": (
+        "This ESL-flagged plugin has no free FormIDs left (limit 0xFFF).",
+        "Questo plugin ESL non ha più FormID liberi (limite 0xFFF).",
+        "Este plugin marcado como ESL ya no tiene FormID libres (límite 0xFFF)."),
+    "Plus aucun FormID libre.": ("No free FormIDs left.", "Nessun FormID libero rimasto.", "No quedan FormID libres."),
+    "Seules les FormLists peuvent être collées dans un autre plugin. Les autres types contiennent des références impossibles à renuméroter sans connaître leur structure. Dans le même plugin, tous les types fonctionnent.": (
+        "Only FormLists can be pasted into another plugin. Other types contain references that cannot be renumbered without knowing their structure. Within the same plugin, every type works.",
+        "Solo le FormList possono essere incollate in un altro plugin. Gli altri tipi contengono riferimenti impossibili da rinumerare senza conoscerne la struttura. Nello stesso plugin funzionano tutti i tipi.",
+        "Solo las FormLists se pueden pegar en otro plugin. Los demás tipos contienen referencias imposibles de renumerar sin conocer su estructura. Dentro del mismo plugin funcionan todos los tipos."),
+}

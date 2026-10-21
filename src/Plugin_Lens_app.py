@@ -11,7 +11,7 @@ import os
 import sys
 import time
 
-from PyQt6.QtCore import QMimeData, QSettings, QSize, Qt, QTimer, pyqtSignal
+from PyQt6.QtCore import QMimeData, QProcess, QSettings, QSize, Qt, QTimer, pyqtSignal
 from PyQt6.QtGui import QAction, QDrag, QKeySequence, QShortcut
 from PyQt6.QtWidgets import (
     QAbstractItemView, QApplication, QCheckBox, QComboBox, QDialog, QFileDialog, QFrame, QHBoxLayout,
@@ -22,6 +22,8 @@ from PyQt6.QtWidgets import (
 
 import plugin_core as pc
 import socle_qt
+from i18n import L
+from lang_button import LangButton, init_lang
 
 APP = "pLUGINSLENS"
 DATA_NAME = "PluginLens"  # réglages et session déjà enregistrés sous ce nom : ne pas renommer
@@ -146,22 +148,22 @@ class RecordTree(QTreeWidget):
 class PickDialog(QDialog):
     """Choisir un enregistrement parmi tous les plugins ouverts."""
 
-    def __init__(self, win: "MainWindow", hint: str = "Recherche dans tous les plugins ouverts."):
+    def __init__(self, win: "MainWindow", hint: str | None = None):
         super().__init__(win)
         self.win, self.result_rec = win, None
-        self.setWindowTitle("Choisir un enregistrement")
+        self.setWindowTitle(L("Choisir un enregistrement"))
         self.resize(520, 480)
         lay = QVBoxLayout(self)
-        lay.addWidget(socle_qt.role(QLabel(hint), "meta"))
+        lay.addWidget(socle_qt.role(QLabel(hint or L("Recherche dans tous les plugins ouverts.")), "meta"))
         self.inp = QLineEdit()
-        self.inp.setPlaceholderText("EditorID, FormID ou type")
+        self.inp.setPlaceholderText(L("EditorID, FormID ou type"))
         self.inp.textChanged.connect(self.run)
         lay.addWidget(self.inp)
         self.lst = QListWidget()
         self.lst.itemActivated.connect(self.pick)
         self.lst.itemClicked.connect(self.pick)
         lay.addWidget(self.lst)
-        cancel = small_button("Annuler", self.reject)
+        cancel = small_button(L("Annuler"), self.reject)
         row = QHBoxLayout()
         row.addStretch(1)
         row.addWidget(cancel)
@@ -172,7 +174,7 @@ class PickDialog(QDialog):
         self.lst.clear()
         q = q.strip()
         if not q:
-            self.lst.addItem("Saisissez une recherche…")
+            self.lst.addItem(L("Saisissez une recherche…"))
             return
         recs, _ = self.win.ws.search(q, limit=200)
         many = len(self.win.ws.plugins) > 1
@@ -181,7 +183,7 @@ class PickDialog(QDialog):
             it.setData(ROLE, r)
             self.lst.addItem(it)
         if not recs:
-            self.lst.addItem("Aucun résultat")
+            self.lst.addItem(L("Aucun résultat"))
 
     def pick(self, it: QListWidgetItem):
         r = it.data(ROLE)
@@ -219,7 +221,7 @@ class ListDialog(QDialog):
         self.lay.addWidget(self.lst)
         row = QHBoxLayout()
         row.addStretch(1)
-        row.addWidget(small_button("Fermer", self.reject))
+        row.addWidget(small_button(L("Fermer"), self.reject))
         self.lay.addLayout(row)
 
     def section(self, text: str):
@@ -264,7 +266,7 @@ class TextDialog(QDialog):
         row = QHBoxLayout()
         row.addStretch(1)
         if not read_only:
-            row.addWidget(small_button("Annuler", self.reject))
+            row.addWidget(small_button(L("Annuler"), self.reject))
         row.addWidget(socle_qt.variant(small_button(ok, self.accept), "primary"))
         lay.addLayout(row)
 
@@ -291,8 +293,8 @@ class SubEditor(QFrame):
         self.toggle = small_button("", self.flip)
         head.addWidget(self.toggle)
         if len(s.d) == 4:
-            head.addWidget(small_button("Choisir…", self.pick))
-        head.addWidget(small_button("Retirer", self.remove))
+            head.addWidget(small_button(L("Choisir…"), self.pick))
+        head.addWidget(small_button(L("Retirer"), self.remove))
         lay.addLayout(head)
         self.ed = QPlainTextEdit()
         self.ed.setFont(socle_qt.font("mono"))
@@ -310,12 +312,12 @@ class SubEditor(QFrame):
         lines = txt.count("\n") + 1 + (len(txt) // 90 if s.m == "h" else 0)
         rows = min(12, max(1, lines))
         self.ed.setFixedHeight(int(rows * self.ed.fontMetrics().lineSpacing() + 30))
-        self.toggle.setText("Hexadécimal" if s.m == "t" else "Texte")
+        self.toggle.setText(L("Hexadécimal") if s.m == "t" else L("Texte"))
         self.meta()
         self._painting = False
 
     def meta(self):
-        self.info.setText(f"{len(self.s.d)} octets")
+        self.info.setText(L("{n} octets", n=len(self.s.d)))
         self.hint.setText(pc.u32_hint(self.s.d))
 
     def flip(self):
@@ -336,7 +338,7 @@ class SubEditor(QFrame):
             if nd is None:
                 return
         self.s.d = nd
-        self.win.set_dirty(self.r.plugin, f"Modifié {self.s.t} dans {pc.label(self.r)}")
+        self.win.set_dirty(self.r.plugin, L("Modifié {t} dans {label}", t=self.s.t, label=pc.label(self.r)))
         self.meta()
         if self.s.t == "EDID":
             self.win.refresh_record_item(self.r)
@@ -351,7 +353,7 @@ class SubEditor(QFrame):
         if x is None:
             return
         self.s.d = pc.p32(x)
-        self.win.set_dirty(self.r.plugin, f"{self.s.t} défini sur {pc.label(self.r)} via le sélecteur")
+        self.win.set_dirty(self.r.plugin, L("{t} défini sur {label} via le sélecteur", t=self.s.t, label=pc.label(self.r)))
         self.paint()
         if self.s.t == "EDID":
             self.win.refresh_record_item(self.r)
@@ -360,7 +362,7 @@ class SubEditor(QFrame):
         if self.win.locked(self.r.plugin):
             return
         self.r.subs.remove(self.s)
-        self.win.set_dirty(self.r.plugin, f"Retiré {self.s.t} de {pc.label(self.r)}")
+        self.win.set_dirty(self.r.plugin, L("Retiré {t} de {label}", t=self.s.t, label=pc.label(self.r)))
         self.setParent(None)
         self.deleteLater()
 
@@ -378,10 +380,10 @@ class CellEditor(QWidget):
         lay.setContentsMargins(2, 2, 2, 2)
         lay.setSpacing(4)
         if s is None:
-            lay.addWidget(socle_qt.role(QLabel("(absent)"), "subtle"))
+            lay.addWidget(socle_qt.role(QLabel(L("(absent)")), "subtle"))
             return
         grip = QLabel("⠿")
-        grip.setToolTip("Glissez sur l'autre côté pour y copier ce champ")
+        grip.setToolTip(L("Glissez sur l'autre côté pour y copier ce champ"))
         grip.setCursor(Qt.CursorShape.OpenHandCursor)
         grip.mousePressEvent = self._start_drag
         lay.addWidget(grip)
@@ -396,7 +398,7 @@ class CellEditor(QWidget):
             self.dec = socle_qt.role(QLabel(dlg.win.ws.decode4(r.plugin, s.d) or ""), "subtle")
             lay.addWidget(self.dec)
             if not r.plugin.locked:
-                lay.addWidget(small_button("Choisir…", self.pick))
+                lay.addWidget(small_button(L("Choisir…"), self.pick))
 
     def _start_drag(self, _e):
         self.dlg.cell_drag = {"r": self.r, "s": self.s, "key": self.key}
@@ -420,7 +422,7 @@ class CellEditor(QWidget):
             self.inp.setStyleSheet(f"background-color: {socle_qt.c('danger-bg')};" if nd is None else "")
             if nd is None:
                 return
-        self.set_data(nd, f"Modifié {self.s.t} sur {pc.label(self.r)} (côte à côte)")
+        self.set_data(nd, L("Modifié {t} sur {label} (côte à côte)", t=self.s.t, label=pc.label(self.r)))
 
     def pick(self):
         t = PickDialog.get(self.dlg.win)
@@ -431,7 +433,7 @@ class CellEditor(QWidget):
             return
         nd = pc.p32(x)
         self.inp.setText(pc.hex_bytes(nd))
-        self.set_data(nd, f"Modifié {self.s.t} sur {pc.label(self.r)} (côte à côte)")
+        self.set_data(nd, L("Modifié {t} sur {label} (côte à côte)", t=self.s.t, label=pc.label(self.r)))
 
     def dragEnterEvent(self, e):
         if e.mimeData().hasFormat(MIME):
@@ -446,18 +448,17 @@ class SideBySideDialog(QDialog):
     def __init__(self, win: "MainWindow", a: pc.Record | None, b: pc.Record | None):
         super().__init__(win)
         self.win, self.a, self.b, self.cell_drag = win, a, b, None
-        self.setWindowTitle("Comparer deux enregistrements")
+        self.setWindowTitle(L("Comparer deux enregistrements"))
         st = win.settings
         self.resize(int(st.value("sbs_w", 760)), int(st.value("sbs_h", 520)))
         lay = QVBoxLayout(self)
-        lay.addWidget(socle_qt.role(QLabel("Comparer deux enregistrements"), "heading"))
-        note = socle_qt.role(QLabel("Choisissez deux enregistrements, ou glissez-les ici depuis l'arbre. "
-                                    "Glissez la poignée ⠿ d'un champ pour copier sa valeur de l'autre côté."), "meta")
+        lay.addWidget(socle_qt.role(QLabel(L("Comparer deux enregistrements")), "heading"))
+        note = socle_qt.role(QLabel(L("Choisissez deux enregistrements, ou glissez-les ici depuis l'arbre. Glissez la poignée ⠿ d'un champ pour copier sa valeur de l'autre côté.")), "meta")
         note.setWordWrap(True)
         lay.addWidget(note)
         slots = QHBoxLayout()
-        self.slot_a = self._slot("Enregistrement A", lambda: self.a, lambda r: setattr(self, "a", r))
-        self.slot_b = self._slot("Enregistrement B", lambda: self.b, lambda r: setattr(self, "b", r))
+        self.slot_a = self._slot(L("Enregistrement A"), lambda: self.a, lambda r: setattr(self, "a", r))
+        self.slot_b = self._slot(L("Enregistrement B"), lambda: self.b, lambda r: setattr(self, "b", r))
         slots.addWidget(self.slot_a)
         slots.addWidget(self.slot_b)
         lay.addLayout(slots)
@@ -469,7 +470,7 @@ class SideBySideDialog(QDialog):
         lay.addWidget(self.table, 1)
         row = QHBoxLayout()
         row.addStretch(1)
-        row.addWidget(small_button("Fermer", self.reject))
+        row.addWidget(small_button(L("Fermer"), self.reject))
         lay.addLayout(row)
         self.redraw()
 
@@ -497,24 +498,24 @@ class SideBySideDialog(QDialog):
             self.redraw()
 
     def _head(self, r):
-        return f"{r.t}  {pc.edid(r)}  ({r.plugin.name}){'  (verrouillé)' if r.plugin.locked else ''}" if r else "—"
+        return f"{r.t}  {pc.edid(r)}  ({r.plugin.name}){L("  (verrouillé)") if r.plugin.locked else ''}" if r else "—"
 
     def redraw(self):
         for f in (self.slot_a, self.slot_b):
             r = f._get()
             f._line.setText(f"{r.t}  {pc.label(r)}  ({r.plugin.name})" if r else "")
-            f._btn.setText("Changer…" if r else "Choisir un enregistrement…")
+            f._btn.setText(L("Changer…") if r else L("Choisir un enregistrement…"))
         a, b = self.a, self.b
         self.table.setRowCount(0)
         self.table.setHorizontalHeaderLabels(["", self._head(a), self._head(b)])
         self.rows = []
         if not a and not b:
             return
-        self._row("Type", QLabel(a.t if a else "—"), QLabel(b.t if b else "—"), bool(a and b and a.t != b.t))
+        self._row(L("Type"), QLabel(a.t if a else "—"), QLabel(b.t if b else "—"), bool(a and b and a.t != b.t))
         if a and b:
-            self.id_row = self._row("FormID", self._hex(a, "id"), self._hex(b, "id"), a.id != b.id)
-            self.fl_row = self._row("Flags", self._hex(a, "flags"), self._hex(b, "flags"), a.flags != b.flags)
-            self._row("Propriétaire", socle_qt.role(QLabel(pc.owner(a.id, a.plugin)), "subtle"),
+            self.id_row = self._row(L("FormID"), self._hex(a, "id"), self._hex(b, "id"), a.id != b.id)
+            self.fl_row = self._row(L("Flags"), self._hex(a, "flags"), self._hex(b, "flags"), a.flags != b.flags)
+            self._row(L("Propriétaire"), socle_qt.role(QLabel(pc.owner(a.id, a.plugin)), "subtle"),
                       socle_qt.role(QLabel(pc.owner(b.id, b.plugin)), "subtle"), False)
             for x in pc.union_rows(a, b):
                 ca = CellEditor(self, a, x["a"], x["tag"], x["key"])
@@ -525,10 +526,10 @@ class SideBySideDialog(QDialog):
                 self.rows.append((i, x))
         else:
             only = a or b
-            self._row("FormID", self._hex(a, "id") if a else QLabel("—"), self._hex(b, "id") if b else QLabel("—"), False)
+            self._row(L("FormID"), self._hex(a, "id") if a else QLabel("—"), self._hex(b, "id") if b else QLabel("—"), False)
             for x in pc.sub_rows(only):
-                ca = CellEditor(self, a, x["sub"], x["tag"], x["key"]) if a else QLabel("(absent)")
-                cb = CellEditor(self, b, x["sub"], x["tag"], x["key"]) if b else QLabel("(absent)")
+                ca = CellEditor(self, a, x["sub"], x["tag"], x["key"]) if a else QLabel(L("(absent)"))
+                cb = CellEditor(self, b, x["sub"], x["tag"], x["key"]) if b else QLabel(L("(absent)"))
                 self._row(x["key"], ca, cb, False)
         self.table.resizeRowsToContents()
         self.table.setColumnWidth(0, 120)
@@ -545,7 +546,7 @@ class SideBySideDialog(QDialog):
             if v is None:
                 return
             setattr(r, attr, v)
-            self.win.set_dirty(r.plugin, f"{'FormID' if attr == 'id' else 'Flags'} modifié (côte à côte)")
+            self.win.set_dirty(r.plugin, L("{v} modifié (côte à côte)", v='FormID' if attr == 'id' else 'Flags'))
             if attr == "id":
                 self.win.refresh_record_item(r)
             self.refresh_diff()
@@ -606,11 +607,11 @@ class SideBySideDialog(QDialog):
                         return
                     nd = pc.p32(x)
             if s:
-                cell.set_data(nd, f"Copié {cell.tag} depuis {frm} (côte à côte)")
+                cell.set_data(nd, L("Copié {tag} depuis {frm} (côte à côte)", tag=cell.tag, frm=frm))
                 self.redraw()
             else:
                 r.subs.append(pc.Sub(cell.tag, nd))
-                win.set_dirty(r.plugin, f"Copié {cell.tag} depuis {frm} (côte à côte)")
+                win.set_dirty(r.plugin, L("Copié {tag} depuis {frm} (côte à côte)", tag=cell.tag, frm=frm))
                 self.redraw()
             return
         if win.drag_recs and (not s or len(s.d) == 4):
@@ -618,10 +619,10 @@ class SideBySideDialog(QDialog):
             if x is None:
                 return
             if s:
-                cell.set_data(pc.p32(x), f"{s.t} défini sur {pc.label(r)} par glisser")
+                cell.set_data(pc.p32(x), L("{t} défini sur {label} par glisser", t=s.t, label=pc.label(r)))
             else:
                 r.subs.append(pc.Sub(cell.tag, pc.p32(x)))
-                win.set_dirty(r.plugin, f"Ajouté {cell.tag} à {pc.label(r)} par glisser")
+                win.set_dirty(r.plugin, L("Ajouté {tag} à {label} par glisser", tag=cell.tag, label=pc.label(r)))
             self.redraw()
 
 
@@ -641,7 +642,7 @@ class MainWindow(QMainWindow):
         self.plugin_items: dict = {}
         self.timers: dict = {}
         self.pins: set[str] = set(json.loads(self.settings.value("pins", "[]")))
-        self.setWindowTitle(f"{APP} · éditeur ESP/ESM")
+        self.setWindowTitle(L("{APP} · éditeur ESP/ESM", APP=APP))
         self.resize(1280, 800)
         self.setAcceptDrops(True)
         self._build()
@@ -663,21 +664,21 @@ class MainWindow(QMainWindow):
         hb.setContentsMargins(10, 6, 10, 6)
         hb.setSpacing(socle_qt.m("space-2"))
         hb.addWidget(socle_qt.role(QLabel(APP), "title"))
-        self.btn_open = socle_qt.variant(small_button("Ouvrir des plugins", self.open_dialog), "action")
+        self.btn_open = socle_qt.variant(small_button(L("Ouvrir des plugins"), self.open_dialog), "action")
         self.btn_open.setStyleSheet(f"min-height: {socle_qt.m('size-control') - 2}px;")
         hb.addWidget(self.btn_open)
         self.q = QLineEdit()
-        self.q.setPlaceholderText("Rechercher un EditorID, un FormID ou un type")
+        self.q.setPlaceholderText(L("Rechercher un EditorID, un FormID ou un type"))
         self.q.setClearButtonEnabled(True)
         self.q.setMinimumWidth(260)
         self.q.textChanged.connect(lambda _: self.rebuild_tree())
         hb.addWidget(self.q)
         self.sortmode = QComboBox()
-        self.sortmode.addItems(["Ordre du fichier", "Tri : EditorID", "Tri : FormID"])
+        self.sortmode.addItems([L("Ordre du fichier"), L("Tri : EditorID"), L("Tri : FormID")])
         self.sortmode.currentIndexChanged.connect(self.change_sort)
         hb.addWidget(self.sortmode)
         self.typefilter = QLineEdit()
-        self.typefilter.setPlaceholderText("Filtrer les groupes : WEAP, ARMO…")
+        self.typefilter.setPlaceholderText(L("Filtrer les groupes : WEAP, ARMO…"))
         self.typefilter.setMaximumWidth(220)
         self.typefilter.textChanged.connect(self.change_filter)
         hb.addWidget(self.typefilter)
@@ -686,6 +687,8 @@ class MainWindow(QMainWindow):
         self.st.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Preferred)
         self.st.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
         hb.addWidget(self.st, 1)
+        self.btn_lang = LangButton(self.settings, self.language_changed)
+        hb.addWidget(self.btn_lang)
         root.addWidget(bar)
 
         self.split = QSplitter(Qt.Orientation.Horizontal)
@@ -724,38 +727,38 @@ class MainWindow(QMainWindow):
             menu.addAction(a)
             return a
 
-        f = mb.addMenu("Fichier")
-        act(f, "Ouvrir des plugins…", self.open_dialog, "Ctrl+O")
-        self.a_save = act(f, "Enregistrer une copie…", self.save_copy, "Ctrl+S")
+        f = mb.addMenu(L("Fichier"))
+        act(f, L("Ouvrir des plugins…"), self.open_dialog, "Ctrl+O")
+        self.a_save = act(f, L("Enregistrer une copie…"), self.save_copy, "Ctrl+S")
         f.addSeparator()
-        self.a_close = act(f, "Fermer le plugin actif", lambda: self.active and self.close_plugin(self.active), "Ctrl+W")
-        self.a_lock = act(f, "Verrouiller / déverrouiller le plugin actif", lambda: self.active and self.toggle_lock(self.active))
+        self.a_close = act(f, L("Fermer le plugin actif"), lambda: self.active and self.close_plugin(self.active), "Ctrl+W")
+        self.a_lock = act(f, L("Verrouiller / déverrouiller le plugin actif"), lambda: self.active and self.toggle_lock(self.active))
         f.addSeparator()
-        self.a_rem = act(f, "Mémoriser les plugins entre les sessions", self.toggle_remember, checkable=True)
+        self.a_rem = act(f, L("Mémoriser les plugins entre les sessions"), self.toggle_remember, checkable=True)
         self.a_rem.setChecked(self.settings.value("remember", "1") == "1")
 
-        e = mb.addMenu("Édition")
-        self.a_undo = act(e, "Annuler", lambda: self.undo(True), "Ctrl+Z")
-        self.a_redo = act(e, "Rétablir", lambda: self.undo(False), "Ctrl+Shift+Z")
+        e = mb.addMenu(L("Édition"))
+        self.a_undo = act(e, L("Annuler la modification"), lambda: self.undo(True), "Ctrl+Z")
+        self.a_redo = act(e, L("Rétablir"), lambda: self.undo(False), "Ctrl+Shift+Z")
         QShortcut(QKeySequence("Ctrl+Y"), self, activated=lambda: self.undo(False))
         e.addSeparator()
-        self.a_copy = act(e, "Copier les enregistrements", self.copy_records)
-        self.a_paste = act(e, "Coller les enregistrements", self.paste_records)
+        self.a_copy = act(e, L("Copier les enregistrements"), self.copy_records)
+        self.a_paste = act(e, L("Coller les enregistrements"), self.paste_records)
         e.addSeparator()
-        self.a_newfl = act(e, "Nouvelle FormList…", self.new_formlist)
+        self.a_newfl = act(e, L("Nouvelle FormList…"), self.new_formlist)
 
-        t = mb.addMenu("Outils")
-        self.a_dup = act(t, "Doublons…", self.find_duplicates)
-        self.a_cmp = act(t, "Comparer deux plugins…", self.compare_plugins)
-        self.a_sbs = act(t, "Comparer deux enregistrements…", self.compare_records)
-        self.a_stats = act(t, "Statistiques…", self.show_stats)
-        self.a_log = act(t, "Journal des modifications…", self.show_log)
+        t = mb.addMenu(L("Outils"))
+        self.a_dup = act(t, L("Doublons…"), self.find_duplicates)
+        self.a_cmp = act(t, L("Comparer deux plugins…"), self.compare_plugins)
+        self.a_sbs = act(t, L("Comparer deux enregistrements…"), self.compare_records)
+        self.a_stats = act(t, L("Statistiques…"), self.show_stats)
+        self.a_log = act(t, L("Journal des modifications…"), self.show_log)
 
-        v = mb.addMenu("Affichage")
-        self.a_tree = act(v, "Afficher l'arbre", self.toggle_tree, "Ctrl+T", checkable=True)
+        v = mb.addMenu(L("Affichage"))
+        self.a_tree = act(v, L("Afficher l'arbre"), self.toggle_tree, "Ctrl+T", checkable=True)
         self.a_tree.setChecked(self.tree.isVisible())
 
-        self.ws_menu = mb.addMenu("Espaces de travail")
+        self.ws_menu = mb.addMenu(L("Espaces de travail"))
 
     def focus_search(self):
         if not isinstance(QApplication.focusWidget(), (QLineEdit, QPlainTextEdit)):
@@ -781,7 +784,7 @@ class MainWindow(QMainWindow):
 
     def locked(self, P: pc.Plugin | None) -> bool:
         if P and P.locked:
-            self.flash(f"{P.name} est verrouillé : déverrouillez-le pour le modifier.")
+            self.flash(L("{name} est verrouillé : déverrouillez-le pour le modifier.", name=P.name))
             return True
         return False
 
@@ -799,12 +802,12 @@ class MainWindow(QMainWindow):
         dirty = any(p.dirty for p in self.ws.plugins)
         socle_qt.status(self.st, "warning" if dirty else "none")
         if not n:
-            self.st.setText("Aucun fichier chargé")
+            self.st.setText(L("Aucun fichier chargé"))
         elif P:
-            self.st.setText(f"{P.name} · {len(P.all) - 1:,} enregistrements · {len(P.masters)} maîtres".replace(",", " ")
-                            + (" · modifié" if P.dirty else "") + (f" · {n} plugins ouverts" if n > 1 else ""))
+            self.st.setText(L("{name} · {v:,} enregistrements · {n} maîtres", name=P.name, v=len(P.all) - 1, n=len(P.masters)).replace(",", " ")
+                            + (L(" · modifié") if P.dirty else "") + (L(" · {n} plugins ouverts", n=n) if n > 1 else ""))
         else:
-            self.st.setText(f"{n} plugins ouverts")
+            self.st.setText(L("{n} plugins ouverts", n=n))
 
     # ------------------------------------------------------- modifications
     def set_dirty(self, P: pc.Plugin, msg: str | None = None):
@@ -829,7 +832,7 @@ class MainWindow(QMainWindow):
     def xref_with_master(self, t: pc.Record, P: pc.Plugin) -> int | None:
         x = self.ws.xref(t, P)
         if "need" in x:
-            if not self.ask(f"Ajouter {x['need']} comme maître de {P.name} ?"):
+            if not self.ask(L("Ajouter {need} comme maître de {name} ?", need=x['need'], name=P.name)):
                 return None
             self.ws.add_master(P, x["need"])
             x = self.ws.xref(t, P)
@@ -841,14 +844,14 @@ class MainWindow(QMainWindow):
             return
         res = self.ws.add_entries(fl, recs)
         if res["changed"]:
-            self.set_dirty(P, f"Ajouté {res['n']} entrée(s) à {pc.label(fl)}")
+            self.set_dirty(P, L("Ajouté {n} entrée(s) à {label}", n=res['n'], label=pc.label(fl)))
             self.refresh_ids(P)
             if self.cur and self.cur.plugin is P:
                 self.show_record(self.cur)
         if res["warn"]:
             self.alert("\n\n".join(res["warn"]))
-        self.flash(f"{res['n']} enregistrement(s) ajouté(s) à {pc.label(fl)}"
-                   + (f" ({res['dup']} déjà dans la liste)" if res["dup"] else ""))
+        self.flash(L("{n} enregistrement(s) ajouté(s) à {label}", n=res['n'], label=pc.label(fl))
+                   + (L(" ({dup} déjà dans la liste)", dup=res['dup']) if res["dup"] else ""))
 
     # ------------------------------------------------------- arbre
     def rebuild_tree(self):
@@ -862,12 +865,12 @@ class MainWindow(QMainWindow):
             for r in recs:
                 self.tree.addTopLevelItem(self.record_item(r, show_plugin=len(self.ws.plugins) > 1))
             if total > 300:
-                self._info_item("Seuls les 300 premiers résultats sont affichés. Affinez la recherche.")
+                self._info_item(L("Seuls les 300 premiers résultats sont affichés. Affinez la recherche."))
             if not total:
-                self._info_item("Aucun résultat")
+                self._info_item(L("Aucun résultat"))
             return
-        self._section("Récemment consultés", self._recent_records(), clear=True)
-        self._section("Épinglés", self._pinned_records())
+        self._section(L("Récemment consultés"), self._recent_records(), clear=True)
+        self._section(L("Épinglés"), self._pinned_records())
         for P in self.ws.plugins:
             self.plugin_item(P)
         self._restore_expanded(expanded)
@@ -914,7 +917,7 @@ class MainWindow(QMainWindow):
         self.tree.addTopLevelItem(head)
         head.setFirstColumnSpanned(True)
         if clear:
-            btn = compact(small_button("Effacer", self.clear_recent))
+            btn = compact(small_button(L("Effacer"), self.clear_recent))
             wrap = QWidget()
             lay = QHBoxLayout(wrap)
             lay.setContentsMargins(0, 0, 4, 0)
@@ -992,7 +995,7 @@ class MainWindow(QMainWindow):
         wrap._lab = QLabel("")
         wrap._lab.setFont(socle_qt.font("label-strong"))
         wrap._lock = small_button("", lambda: self.toggle_lock(P))
-        wrap._close = small_button("Fermer", lambda: self.close_plugin(P))
+        wrap._close = small_button(L("Fermer"), lambda: self.close_plugin(P))
         for b in (wrap._lock, wrap._close):
             compact(b)
         lay.addWidget(wrap._lab, 1)
@@ -1007,8 +1010,8 @@ class MainWindow(QMainWindow):
 
     def paint_plugin_item(self, it, P: pc.Plugin):
         w = it._wrap
-        w._lab.setText(P.name + (" •" if P.dirty else "") + ("   (verrouillé)" if P.locked else ""))
-        w._lock.setText("Déverrouiller" if P.locked else "Verrouiller")
+        w._lab.setText(P.name + (" •" if P.dirty else "") + (L("   (verrouillé)") if P.locked else ""))
+        w._lock.setText(L("Déverrouiller") if P.locked else L("Verrouiller"))
 
     def expand_item(self, it: QTreeWidgetItem):
         node = it.data(0, ROLE)
@@ -1048,7 +1051,7 @@ class MainWindow(QMainWindow):
             self.show_record(node)
         n = len([x for x in self.tree.selectedItems() if isinstance(x.data(0, ROLE), pc.Record)])
         if n > 1:
-            self.flash(f"{n} enregistrements sélectionnés. Glissez-les sur une FormList.")
+            self.flash(L("{n} enregistrements sélectionnés. Glissez-les sur une FormList.", n=n))
 
     def current_item(self, it, _prev):
         if it is None:
@@ -1081,13 +1084,13 @@ class MainWindow(QMainWindow):
             card.setProperty("panel", "true")
             cl = QVBoxLayout(card)
             cl.setContentsMargins(32, 32, 32, 32)
-            t = socle_qt.role(QLabel("Glissez un ou plusieurs fichiers .ESP, .ESM ou .ESL ici"), "display")
+            t = socle_qt.role(QLabel(L("Glissez un ou plusieurs fichiers .ESP, .ESM ou .ESL ici")), "display")
             t.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            m = socle_qt.role(QLabel("Tout est analysé localement. Aucune installation de Skyrim n'est nécessaire."), "muted")
+            m = socle_qt.role(QLabel(L("Tout est analysé localement. Aucune installation de Skyrim n'est nécessaire.")), "muted")
             m.setAlignment(Qt.AlignmentFlag.AlignCenter)
             cl.addWidget(t)
             cl.addWidget(m)
-            b = socle_qt.variant(small_button("Ouvrir des plugins", self.open_dialog), "action")
+            b = socle_qt.variant(small_button(L("Ouvrir des plugins"), self.open_dialog), "action")
             cl.addWidget(b, alignment=Qt.AlignmentFlag.AlignCenter)
             lay.addWidget(card, alignment=Qt.AlignmentFlag.AlignCenter)
         lay.addStretch(2)
@@ -1115,7 +1118,7 @@ class MainWindow(QMainWindow):
         lay.setContentsMargins(20, 16, 20, 16)
         lay.setSpacing(8)
         if P.locked:
-            ban = QLabel(f"{P.name} est verrouillé. Déverrouillez-le depuis l'arbre pour le modifier.")
+            ban = QLabel(L("{name} est verrouillé. Déverrouillez-le depuis l'arbre pour le modifier.", name=P.name))
             ban.setStyleSheet(f"background: {socle_qt.c('warning-bg')}; color: {socle_qt.c('warning-soft')}; "
                               f"border: 1px solid {socle_qt.c('warning-border')}; border-radius: 4px; padding: 6px 10px;")
             lay.addWidget(ban)
@@ -1124,22 +1127,22 @@ class MainWindow(QMainWindow):
         lay.addWidget(title)
         hd = QHBoxLayout()
         hd.setSpacing(16)
-        self._id_inp = self._hex_field(hd, "FormID (hex)", r.id, lambda v: (setattr(r, "id", v), self.refresh_record_item(r)))
-        self._flag_inp = self._hex_field(hd, "Flags (hex)", r.flags, lambda v: (setattr(r, "flags", v), self._sync_flags(r)))
+        self._id_inp = self._hex_field(hd, L("FormID (hex)"), r.id, lambda v: (setattr(r, "id", v), self.refresh_record_item(r)))
+        self._flag_inp = self._hex_field(hd, L("Flags (hex)"), r.flags, lambda v: (setattr(r, "flags", v), self._sync_flags(r)))
         hd.addStretch(1)
         lay.addLayout(hd)
-        lay.addWidget(socle_qt.role(QLabel(f"{P.name} · Propriétaire : {pc.owner(r.id, P)}"), "meta"))
+        lay.addWidget(socle_qt.role(QLabel(L("{name} · Propriétaire : {owner}", name=P.name, owner=pc.owner(r.id, P))), "meta"))
         btns = QHBoxLayout()
         ro = []
-        ro.append(small_button("Ajouter un sous-enregistrement", lambda: self.add_sub(r)))
-        ro.append(small_button("Cloner", lambda: self.clone_record(r)))
-        ro.append(small_button("Supprimer", lambda: self.delete_record(r)))
+        ro.append(small_button(L("Ajouter un sous-enregistrement"), lambda: self.add_sub(r)))
+        ro.append(small_button(L("Cloner"), lambda: self.clone_record(r)))
+        ro.append(small_button(L("Supprimer"), lambda: self.delete_record(r)))
         for b in ro:
             b.setEnabled(not P.locked)
             btns.addWidget(b)
-        self._pin_btn = small_button("Désépingler" if self.is_pinned(r) else "Épingler", lambda: self.toggle_pin(r))
+        self._pin_btn = small_button(L("Désépingler") if self.is_pinned(r) else L("Épingler"), lambda: self.toggle_pin(r))
         btns.addWidget(self._pin_btn)
-        btns.addWidget(small_button("Où est-il utilisé ?", lambda: self.where_used(r)))
+        btns.addWidget(small_button(L("Où est-il utilisé ?"), lambda: self.where_used(r)))
         btns.addStretch(1)
         lay.addLayout(btns)
 
@@ -1147,7 +1150,7 @@ class MainWindow(QMainWindow):
         flags.setSpacing(18)
         self._flag_boxes = []
         for bit, name in (pc.TES4FLAGS if r.t == "TES4" else pc.RFLAGS):
-            cb = QCheckBox(name)
+            cb = QCheckBox(L(name))
             cb.setChecked(bool(r.flags & bit))
             cb.setEnabled(not P.locked)
             cb.toggled.connect(lambda on, bit=bit, name=name: self.set_flag(r, bit, name, on))
@@ -1207,17 +1210,17 @@ class MainWindow(QMainWindow):
             return
         r.flags = (r.flags | bit) if on else (r.flags & ~bit) & 0xFFFFFFFF
         self._flag_inp.setText(pc.hexs(r.flags))
-        self.set_dirty(r.plugin, f"{'Activé' if on else 'Désactivé'} « {name} » sur {pc.label(r)}")
+        self.set_dirty(r.plugin, L("{v} « {name} » sur {label}", v=L("Activé") if on else L("Désactivé"), name=L(name), label=pc.label(r)))
 
     def add_sub(self, r):
         if self.locked(r.plugin):
             return
-        t, ok = QInputDialog.getText(self, APP, "Type de sous-enregistrement (quatre caractères, ex. FULL) :")
+        t, ok = QInputDialog.getText(self, APP, L("Type de sous-enregistrement (quatre caractères, ex. FULL) :"))
         t = t.strip()
         if not ok or len(t) != 4:
             return
         r.subs.append(pc.Sub(t, b""))
-        self.set_dirty(r.plugin, f"Ajouté {t} à {pc.label(r)}")
+        self.set_dirty(r.plugin, L("Ajouté {t} à {label}", t=t, label=pc.label(r)))
         self.show_record(r)
 
     def clone_record(self, r):
@@ -1226,27 +1229,27 @@ class MainWindow(QMainWindow):
         c = self.ws.clone_record(r)
         if not c:
             return
-        self.set_dirty(r.plugin, f"Cloné {pc.label(r)} en {pc.hexs(c.id)}")
+        self.set_dirty(r.plugin, L("Cloné {label} en {hexs}", label=pc.label(r), hexs=pc.hexs(c.id)))
         it = self.items.get(id(r))
         if it and it.parent():
             p = it.parent()
             p.insertChild(p.indexOfChild(it) + 1, self.record_item(c))
         self.show_record(c)
-        self.flash(f"Cloné en {pc.hexs(c.id)}")
+        self.flash(L("Cloné en {hexs}", hexs=pc.hexs(c.id)))
 
     def delete_record(self, r):
         P = r.plugin
         if self.locked(P) or r is P.header:
             return
-        if not self.ask("Supprimer cet enregistrement ? Les enregistrements qui y font référence seront cassés."):
+        if not self.ask(L("Supprimer cet enregistrement ? Les enregistrements qui y font référence seront cassés.")):
             return
         self.ws.delete_record(r)
         it = self.items.pop(id(r), None)
         if it:
             (it.parent() or self.tree.invisibleRootItem()).removeChild(it)
-        self.set_dirty(P, f"Supprimé {r.t} {pc.label(r)}")
+        self.set_dirty(P, L("Supprimé {t} {label}", t=r.t, label=pc.label(r)))
         self.cur = None
-        self.empty_detail("Enregistrement supprimé.")
+        self.empty_detail(L("Enregistrement supprimé."))
 
     def delete_current(self):
         if self.cur and self.cur is not self.cur.plugin.header:
@@ -1264,7 +1267,7 @@ class MainWindow(QMainWindow):
     def fl_panel(self, r):
         P = r.plugin
         ents = self.ws.fl_entries(r)
-        fr, lay = self._panel(f"Entrées ({len(ents)}). Glissez des enregistrements depuis l'arbre, y compris d'autres plugins ouverts.",
+        fr, lay = self._panel(L("Entrées ({n}). Glissez des enregistrements depuis l'arbre, y compris d'autres plugins ouverts.", n=len(ents)),
                               lambda: (not self.locked(P)) and self.drag_recs and self.add_entries(r, self.drag_recs))
         tools = QHBoxLayout()
 
@@ -1272,21 +1275,21 @@ class MainWindow(QMainWindow):
             if self.locked(P):
                 return
             k = self.ws.fl_set(r, lst)
-            self.set_dirty(P, msg or f"Entrées réordonnées dans {pc.label(r)}")
+            self.set_dirty(P, msg or L("Entrées réordonnées dans {label}", label=pc.label(r)))
             self.show_record(r)
             if k > 0:
-                self.flash(f"{k} entrée(s) retirée(s)")
+                self.flash(L("{k} entrée(s) retirée(s)", k=k))
 
-        tools.addWidget(small_button("Importer…", lambda: self.import_list(r), not P.locked))
-        tools.addWidget(small_button("Exporter…", lambda: self.export_list(r)))
-        tools.addWidget(small_button("Trier par nom", lambda: set_l(self.ws.fl_sorted_by_name(r)), not P.locked))
-        tools.addWidget(small_button("Trier par FormID", lambda: set_l(self.ws.fl_sorted_by_formid(r)), not P.locked))
-        tools.addWidget(small_button("Retirer les doublons", lambda: set_l(self.ws.fl_deduped(r), f"Doublons retirés de {pc.label(r)}"), not P.locked))
-        tools.addWidget(small_button("Retirer les entrées cassées", lambda: set_l(self.ws.fl_without_broken(r), f"Entrées cassées retirées de {pc.label(r)}"), not P.locked))
+        tools.addWidget(small_button(L("Importer…"), lambda: self.import_list(r), not P.locked))
+        tools.addWidget(small_button(L("Exporter…"), lambda: self.export_list(r)))
+        tools.addWidget(small_button(L("Trier par nom"), lambda: set_l(self.ws.fl_sorted_by_name(r)), not P.locked))
+        tools.addWidget(small_button(L("Trier par FormID"), lambda: set_l(self.ws.fl_sorted_by_formid(r)), not P.locked))
+        tools.addWidget(small_button(L("Retirer les doublons"), lambda: set_l(self.ws.fl_deduped(r), L("Doublons retirés de {label}", label=pc.label(r))), not P.locked))
+        tools.addWidget(small_button(L("Retirer les entrées cassées"), lambda: set_l(self.ws.fl_without_broken(r), L("Entrées cassées retirées de {label}", label=pc.label(r))), not P.locked))
         tools.addStretch(1)
         lay.addLayout(tools)
         if not ents:
-            lay.addWidget(socle_qt.role(QLabel("Vide. Déposez des enregistrements ici."), "muted"))
+            lay.addWidget(socle_qt.role(QLabel(L("Vide. Déposez des enregistrements ici.")), "muted"))
         for i, s in enumerate(ents):
             v = pc.lnam(s)
             t = self.ws.resolve(P, v)
@@ -1295,15 +1298,15 @@ class MainWindow(QMainWindow):
             ix.setFixedWidth(zw(36))
             ix.setAlignment(Qt.AlignmentFlag.AlignRight)
             row.addWidget(ix)
-            row.addWidget(mono_label("invalide" if v is None else pc.hexs(v)))
+            row.addWidget(mono_label(L("invalide") if v is None else pc.hexs(v)))
             if v is None:
-                txt = "L'entrée ne fait pas 4 octets"
+                txt = L("L'entrée ne fait pas 4 octets")
             elif t:
                 txt = f"{t.t}  {pc.edid(t)}" + (f"  ({t.plugin.name})" if t.plugin is not P else "")
             elif v >> 24 < len(P.masters):
-                txt = f"de {P.masters[v >> 24]} (non ouvert)"
+                txt = L("de {v} (non ouvert)", v=P.masters[v >> 24])
             else:
-                txt = "introuvable dans ce fichier"
+                txt = L("introuvable dans ce fichier")
             nm = QPushButton(txt) if t else QLabel(txt)
             if t:
                 nm.setFlat(True)
@@ -1323,42 +1326,41 @@ class MainWindow(QMainWindow):
                 self.set_dirty(P)
                 self.show_record(r)
 
-            row.addWidget(small_button("Monter", lambda _=False, i=i: mv(i - 1), i > 0 and not P.locked))
-            row.addWidget(small_button("Descendre", lambda _=False, i=i: mv(i + 1), i < len(ents) - 1 and not P.locked))
-            row.addWidget(small_button("Retirer", rm, not P.locked))
+            row.addWidget(small_button(L("Monter"), lambda _=False, i=i: mv(i - 1), i > 0 and not P.locked))
+            row.addWidget(small_button(L("Descendre"), lambda _=False, i=i: mv(i + 1), i < len(ents) - 1 and not P.locked))
+            row.addWidget(small_button(L("Retirer"), rm, not P.locked))
             lay.addLayout(row)
         return fr
 
     def import_list(self, r):
         if self.locked(r.plugin):
             return
-        d = TextDialog(self, f"Importer dans {pc.label(r)}", "", "Importer",
-                       "Un EditorID ou un FormID hexadécimal à 8 chiffres par ligne. Les FormID suivent la "
-                       "numérotation de ce plugin. Les lignes commençant par # sont ignorées.")
+        d = TextDialog(self, L("Importer dans {label}", label=pc.label(r)), "", "Importer",
+                       L("Un EditorID ou un FormID hexadécimal à 8 chiffres par ligne. Les FormID suivent la numérotation de ce plugin. Les lignes commençant par # sont ignorées."))
         if not d.exec():
             return
         res = self.ws.import_list(r, d.ed.toPlainText())
         if res["changed"]:
-            self.set_dirty(r.plugin, f"Ajouté {res['n']} entrée(s) à {pc.label(r)}")
+            self.set_dirty(r.plugin, L("Ajouté {n} entrée(s) à {label}", n=res['n'], label=pc.label(r)))
         elif res["raw"]:
-            self.set_dirty(r.plugin, f"Importé {res['raw']} entrée(s) brute(s) dans {pc.label(r)}")
+            self.set_dirty(r.plugin, L("Importé {raw} entrée(s) brute(s) dans {label}", raw=res['raw'], label=pc.label(r)))
         if res["warn"]:
             self.alert("\n\n".join(res["warn"]))
         self.show_record(r)
-        self.flash(f"{res['n'] + res['raw']} entrée(s) ajoutée(s)")
+        self.flash(L("{v} entrée(s) ajoutée(s)", v=res['n'] + res['raw']))
         if res["bad"]:
             bad = res["bad"]
-            self.alert(f"Introuvables ({len(bad)}) :\n" + "\n".join(bad[:30]) + ("\n…" if len(bad) > 30 else ""))
+            self.alert(L("Introuvables ({n}) :\n", n=len(bad)) + "\n".join(bad[:30]) + ("\n…" if len(bad) > 30 else ""))
 
     def export_list(self, r):
-        TextDialog(self, f"Exporter {pc.label(r)}", self.ws.export_list(r), "Fermer",
-                   "EditorID quand il est connu, sinon FormID hexadécimal.", read_only=True).exec()
+        TextDialog(self, L("Exporter {label}", label=pc.label(r)), self.ws.export_list(r), "Fermer",
+                   L("EditorID quand il est connu, sinon FormID hexadécimal."), read_only=True).exec()
 
     def glob_panel(self, r):
         P = r.plugin
-        fr, lay = self._panel("Variable globale")
+        fr, lay = self._panel(L("Variable globale"))
         row = QHBoxLayout()
-        row.addWidget(QLabel("Type"))
+        row.addWidget(QLabel(L("Type")))
         tsel = QComboBox()
         for v, t in (("s", "Short"), ("l", "Long"), ("f", "Float")):
             tsel.addItem(t, v)
@@ -1369,11 +1371,11 @@ class MainWindow(QMainWindow):
             if self.locked(P):
                 return
             self.ws.set_glob_type(r, tsel.currentData())
-            self.set_dirty(P, f"Type modifié pour {pc.label(r)}")
+            self.set_dirty(P, L("Type modifié pour {label}", label=pc.label(r)))
 
         tsel.currentIndexChanged.connect(tchange)
         row.addWidget(tsel)
-        row.addWidget(QLabel("Valeur"))
+        row.addWidget(QLabel(L("Valeur")))
         v = self.ws.glob_value(r)
         vin = QLineEdit("" if v is None else repr(v) if v != int(v) else str(int(v)) if abs(v) < 1e15 else repr(v))
         vin.setFixedWidth(zw(140))
@@ -1386,13 +1388,13 @@ class MainWindow(QMainWindow):
             if f is None:
                 return
             self.ws.set_glob_value(r, f)
-            self.set_dirty(P, f"Valeur modifiée pour {pc.label(r)}")
+            self.set_dirty(P, L("Valeur modifiée pour {label}", label=pc.label(r)))
 
         vin.textEdited.connect(vchange)
         row.addWidget(vin)
         row.addStretch(1)
         lay.addLayout(row)
-        lay.addWidget(socle_qt.role(QLabel("Toutes les globales stockent leur valeur en flottant, quel que soit leur type."), "meta"))
+        lay.addWidget(socle_qt.role(QLabel(L("Toutes les globales stockent leur valeur en flottant, quel que soit leur type.")), "meta"))
         return fr
 
     def kwda_panel(self, r):
@@ -1403,7 +1405,7 @@ class MainWindow(QMainWindow):
             if self.locked(P):
                 return
             self.ws.set_keywords(r, lst)
-            self.set_dirty(P, msg or f"Mots-clés modifiés sur {pc.label(r)}")
+            self.set_dirty(P, msg or L("Mots-clés modifiés sur {label}", label=pc.label(r)))
             self.show_record(r)
 
         def drop():
@@ -1419,14 +1421,14 @@ class MainWindow(QMainWindow):
                     lst.append(x["id"])
                     n += 1
             if n:
-                setv(lst, f"Ajouté {n} mot(s)-clé(s) à {pc.label(r)}")
+                setv(lst, L("Ajouté {n} mot(s)-clé(s) à {label}", n=n, label=pc.label(r)))
 
-        fr, lay = self._panel(f"Mots-clés ({len(ids)})", drop)
+        fr, lay = self._panel(L("Mots-clés ({n})", n=len(ids)), drop)
         for i, v in enumerate(ids):
             t = self.ws.resolve(P, v)
             row = QHBoxLayout()
             row.addWidget(mono_label(pc.hexs(v)))
-            txt = (pc.edid(t) or t.t) if t else (f"de {P.masters[v >> 24]}" if v >> 24 < len(P.masters) else "introuvable")
+            txt = (pc.edid(t) or t.t) if t else (L("de {master}", master=P.masters[v >> 24]) if v >> 24 < len(P.masters) else L("introuvable"))
             nm = QPushButton(txt) if t else QLabel(txt)
             if t:
                 nm.setFlat(True)
@@ -1437,9 +1439,9 @@ class MainWindow(QMainWindow):
             def rm(_=False, i=i):
                 lst = self.ws.keywords(r)
                 lst.pop(i)
-                setv(lst, f"Mot-clé retiré de {pc.label(r)}")
+                setv(lst, L("Mot-clé retiré de {label}", label=pc.label(r)))
 
-            row.addWidget(small_button("Retirer", rm, not P.locked))
+            row.addWidget(small_button(L("Retirer"), rm, not P.locked))
             lay.addLayout(row)
 
         def add():
@@ -1451,11 +1453,11 @@ class MainWindow(QMainWindow):
                 return
             lst = self.ws.keywords(r)
             if x in lst:
-                return self.flash("Ce mot-clé est déjà présent")
+                return self.flash(L("Ce mot-clé est déjà présent"))
             lst.append(x)
-            setv(lst, f"Mot-clé ajouté à {pc.label(r)}")
+            setv(lst, L("Mot-clé ajouté à {label}", label=pc.label(r)))
 
-        lay.addWidget(small_button("Ajouter un mot-clé…", add, not P.locked), alignment=Qt.AlignmentFlag.AlignLeft)
+        lay.addWidget(small_button(L("Ajouter un mot-clé…"), add, not P.locked), alignment=Qt.AlignmentFlag.AlignLeft)
         return fr
 
     # ------------------------------------------------------- épingles
@@ -1469,14 +1471,14 @@ class MainWindow(QMainWindow):
         k = self.pin_key(r)
         self.pins.symmetric_difference_update({k})
         self.settings.setValue("pins", json.dumps(sorted(self.pins)))
-        self._pin_btn.setText("Désépingler" if self.is_pinned(r) else "Épingler")
+        self._pin_btn.setText(L("Désépingler") if self.is_pinned(r) else L("Épingler"))
         if not self.q.text().strip():
             self.rebuild_tree()
 
     # ------------------------------------------------------- fichiers
     def open_dialog(self):
-        files, _ = QFileDialog.getOpenFileNames(self, "Ouvrir des plugins", self.settings.value("lastdir", ""),
-                                                "Plugins Skyrim (*.esp *.esm *.esl)")
+        files, _ = QFileDialog.getOpenFileNames(self, L("Ouvrir des plugins"), self.settings.value("lastdir", ""),
+                                                L("Plugins Skyrim (*.esp *.esm *.esl)"))
         if files:
             self.settings.setValue("lastdir", os.path.dirname(files[0]))
             self.load_files(files)
@@ -1495,17 +1497,17 @@ class MainWindow(QMainWindow):
                     with open(p, "rb") as f:
                         self.load(os.path.basename(p), f.read())
                 except OSError as e:
-                    self.alert(f"Impossible de lire {os.path.basename(p)} : {e.strerror}")
+                    self.alert(L("Impossible de lire {basename} : {strerror}", basename=os.path.basename(p), strerror=e.strerror))
 
     def load(self, name: str, data: bytes, dirty: bool = False, t: float | None = None, persist: bool = True):
         if self.ws.find(name):
-            return self.flash(f"{name} est déjà ouvert")
-        self.st.setText(f"Analyse de {name}…")
+            return self.flash(L("{name} est déjà ouvert", name=name))
+        self.st.setText(L("Analyse de {name}…", name=name))
         self.st.repaint()  # pas de processEvents : il permettrait un second chargement en parallèle
         try:
             P = pc.load_plugin(name, data, dirty=dirty, t=t or time.time())
         except Exception as e:
-            self.st.setText(f"Impossible de lire {name} : {e}")
+            self.st.setText(L("Impossible de lire {name} : {e}", name=name, e=e))
             socle_qt.status(self.st, "danger")
             return None
         self.ws.plugins.append(P)
@@ -1526,8 +1528,8 @@ class MainWindow(QMainWindow):
         P = self.active
         if not P:
             return
-        path, _ = QFileDialog.getSaveFileName(self, "Enregistrer une copie", os.path.join(self.settings.value("lastdir", ""), P.name),
-                                              "Plugins Skyrim (*.esp *.esm *.esl)")
+        path, _ = QFileDialog.getSaveFileName(self, L("Enregistrer une copie"), os.path.join(self.settings.value("lastdir", ""), P.name),
+                                              L("Plugins Skyrim (*.esp *.esm *.esl)"))
         if not path:
             return
         self.ws.fix_hedr(P)
@@ -1535,20 +1537,20 @@ class MainWindow(QMainWindow):
             with open(path, "wb") as f:
                 f.write(pc.serialize(P))
         except OSError as e:
-            return self.alert(f"Impossible d'enregistrer : {e.strerror}. Vérifiez les droits d'écriture du dossier.")
+            return self.alert(L("Impossible d'enregistrer : {strerror}. Vérifiez les droits d'écriture du dossier.", strerror=e.strerror))
         self.settings.setValue("lastdir", os.path.dirname(path))
         P.dirty = False
         self.mark(P)
         self.status()
         self.persist(P)
-        self.flash(f"Copie de {P.name} enregistrée")
+        self.flash(L("Copie de {name} enregistrée", name=P.name))
 
     def close_plugin(self, P: pc.Plugin, ask: bool = True) -> bool:
         if ask and P.dirty:
             others = len([q for q in self.ws.plugins if q is not P and q.dirty])
-            msg = f"{P.name} a des modifications non enregistrées. Le fermer quand même ?"
+            msg = L("{name} a des modifications non enregistrées. Le fermer quand même ?", name=P.name)
             if others:
-                msg += f" ({others} autre(s) plugin(s) ont aussi des modifications non enregistrées.)"
+                msg += L(" ({others} autre(s) plugin(s) ont aussi des modifications non enregistrées.)", others=others)
             if not self.ask(msg):
                 return False
         self._session_remove(P.name)
@@ -1558,7 +1560,7 @@ class MainWindow(QMainWindow):
         self.recent = [k for k in self.recent if not k.startswith(P.name + "|")]
         if self.cur and self.cur.plugin is P:
             self.cur = None
-            self.empty_detail("Plugin fermé.")
+            self.empty_detail(L("Plugin fermé."))
         self.rebuild_tree()
         self.status()
         return True
@@ -1566,14 +1568,22 @@ class MainWindow(QMainWindow):
     def toggle_lock(self, P: pc.Plugin):
         P.locked = not P.locked
         self.mark(P)
-        self.flash(f"{P.name} {'verrouillé' if P.locked else 'déverrouillé'}")
+        self.flash(L("{name} verrouillé", name=P.name) if P.locked else L("{name} déverrouillé", name=P.name))
         if self.cur and self.cur.plugin is P:
             self.show_record(self.cur)
+
+    def language_changed(self):
+        """La nouvelle langue s'applique au prochain lancement : propose de relancer tout de suite."""
+        if not self.ask(L("La langue sera appliquée au prochain lancement de {app}. Relancer maintenant ?", app=APP)):
+            return
+        args = sys.argv[1:] if getattr(sys, "frozen", False) else sys.argv
+        if self.close():
+            QProcess.startDetached(sys.executable, args)
 
     def closeEvent(self, e):
         dirty = [p.name for p in self.ws.plugins if p.dirty]
         if dirty and not self.a_rem.isChecked():
-            if not self.ask("Des plugins ont des modifications non enregistrées :\n" + "\n".join(dirty) + "\n\nQuitter quand même ?"):
+            if not self.ask(L("Des plugins ont des modifications non enregistrées :\n") + "\n".join(dirty) + L("\n\nQuitter quand même ?")):
                 e.ignore()
                 return
         for t in self.timers.values():
@@ -1654,7 +1664,7 @@ class MainWindow(QMainWindow):
         rows = sorted(self._session_index().items(), key=lambda kv: kv[1].get("t", 0))
         n = sum(1 for name, meta in rows if self._session_load(name, meta))
         if n:
-            self.flash(f"{n} plugin(s) restauré(s) depuis votre dernière session")
+            self.flash(L("{n} plugin(s) restauré(s) depuis votre dernière session", n=n))
 
     # ------------------------------------------------------- espaces de travail
     def _workspaces(self) -> dict:
@@ -1666,7 +1676,7 @@ class MainWindow(QMainWindow):
     def refresh_ws_menu(self):
         m = self.ws_menu
         m.clear()
-        save = QAction("Enregistrer l'espace de travail…", self)
+        save = QAction(L("Enregistrer l'espace de travail…"), self)
         save.triggered.connect(self.save_workspace)
         m.addAction(save)
         wss = self._workspaces()
@@ -1679,8 +1689,8 @@ class MainWindow(QMainWindow):
 
     def save_workspace(self):
         if not self.ws.plugins:
-            return self.flash("Ouvrez d'abord des plugins")
-        name, ok = QInputDialog.getText(self, APP, "Nom de l'espace de travail (les plugins ouverts) :")
+            return self.flash(L("Ouvrez d'abord des plugins"))
+        name, ok = QInputDialog.getText(self, APP, L("Nom de l'espace de travail (les plugins ouverts) :"))
         name = name.strip()
         if not ok or not name:
             return
@@ -1688,7 +1698,7 @@ class MainWindow(QMainWindow):
         wss[name] = {"plugins": [P.name for P in self.ws.plugins]}
         self.settings.setValue("workspaces", json.dumps(wss))
         self.refresh_ws_menu()
-        self.flash(f"Espace de travail « {name} » enregistré")
+        self.flash(L("Espace de travail « {name} » enregistré", name=name))
 
     def load_workspace(self, name: str):
         ws = self._workspaces().get(name)
@@ -1703,9 +1713,9 @@ class MainWindow(QMainWindow):
             if nm not in idx or not self._session_load(nm, idx[nm]):
                 missing.append(nm)
         if missing:
-            self.alert(f"Ces plugins font partie de « {name} » mais ne sont pas mémorisés : rouvrez-les manuellement.\n"
+            self.alert(L("Ces plugins font partie de « {name} » mais ne sont pas mémorisés : rouvrez-les manuellement.\n", name=name)
                        + "\n".join(missing))
-        self.flash(f"Espace de travail « {name} » chargé")
+        self.flash(L("Espace de travail « {name} » chargé", name=name))
 
     # ------------------------------------------------------- édition
     def undo(self, back: bool):
@@ -1728,35 +1738,35 @@ class MainWindow(QMainWindow):
             self.show_record(r)
         elif key:
             self.cur = None
-            self.empty_detail("Aucune sélection.")
+            self.empty_detail(L("Aucune sélection."))
         self.mark(P)
         self.persist(P)
         self.status()
-        self.flash("Dernière modification annulée" if back else "Modification rétablie")
+        self.flash(L("Dernière modification annulée") if back else L("Modification rétablie"))
 
     def copy_records(self):
         recs = self.selected_records() or ([self.cur] if self.cur else [])
         clip, skipped = self.ws.copy_records(recs)
         if not clip:
-            return self.flash("Seuls les enregistrements de premier niveau peuvent être copiés, pas le contenu des cellules"
-                              if recs else "Sélectionnez d'abord des enregistrements")
+            return self.flash(L("Seuls les enregistrements de premier niveau peuvent être copiés, pas le contenu des cellules")
+                              if recs else L("Sélectionnez d'abord des enregistrements"))
         self.clip = clip
-        self.flash(f"{len(clip)} enregistrement(s) copié(s)" + (f" ({skipped} ignoré(s))" if skipped else ""))
+        self.flash(L("{n} enregistrement(s) copié(s)", n=len(clip)) + (L(" ({skipped} ignoré(s))", skipped=skipped) if skipped else ""))
 
     def paste_records(self):
         P = self.active
         if not P or self.locked(P):
             return
         if not self.clip:
-            return self.flash("Rien n'a encore été copié")
+            return self.flash(L("Rien n'a encore été copié"))
         res = self.ws.paste_records(P, self.clip)
         if res["changed"]:
-            self.set_dirty(P, f"Collé {res['n']} enregistrement(s)")
+            self.set_dirty(P, L("Collé {n} enregistrement(s)", n=res['n']))
             self.rebuild_tree()
             it = self.plugin_items.get(id(P))
             if it:
                 it.setExpanded(True)
-            self.flash(f"{res['n']} enregistrement(s) collé(s) dans {P.name}")
+            self.flash(L("{n} enregistrement(s) collé(s) dans {name}", n=res['n'], name=P.name))
         if res["warn"]:
             self.alert("\n\n".join(res["warn"]))
 
@@ -1764,11 +1774,11 @@ class MainWindow(QMainWindow):
         P = self.active
         if not P or self.locked(P):
             return
-        name, ok = QInputDialog.getText(self, APP, f"EditorID de la nouvelle FormList dans {P.name} :")
+        name, ok = QInputDialog.getText(self, APP, L("EditorID de la nouvelle FormList dans {name} :", name=P.name))
         name = name.strip()
         if not ok or not name:
             return
-        if any(pc.edid(r) == name for r in P.all) and not self.ask("Un enregistrement porte déjà cet EditorID. Créer quand même ?"):
+        if any(pc.edid(r) == name for r in P.all) and not self.ask(L("Un enregistrement porte déjà cet EditorID. Créer quand même ?")):
             return
         r = self.ws.new_formlist(P, name)
         if not r:
@@ -1787,40 +1797,38 @@ class MainWindow(QMainWindow):
 
     # ------------------------------------------------------- outils
     def where_used(self, r):
-        d = ListDialog(self, f"Où est utilisé : {pc.label(r)}",
-                       "Heuristique : tout sous-enregistrement de 4 octets dont la valeur égale ce FormID (renuméroté "
-                       "pour chaque plugin). Peut inclure des faux positifs et ignore les champs qui ne font pas 4 octets.")
+        d = ListDialog(self, L("Où est utilisé : {label}", label=pc.label(r)),
+                       L("Heuristique : tout sous-enregistrement de 4 octets dont la valeur égale ce FormID (renuméroté pour chaque plugin). Peut inclure des faux positifs et ignore les champs qui ne font pas 4 octets."))
         hits = self.ws.where_used(r)
         many = len(self.ws.plugins) > 1
         for rec, s in hits:
             d.record(rec, f"  ·{s.t}" + (f"  ({rec.plugin.name})" if many else ""))
         if not hits:
-            d.message("Aucun enregistrement ouvert n'a de champ de 4 octets égal à ce FormID.")
+            d.message(L("Aucun enregistrement ouvert n'a de champ de 4 octets égal à ce FormID."))
         d.exec()
 
     def find_duplicates(self):
         dup_i, dup_e = self.ws.find_duplicates()
-        d = ListDialog(self, "Doublons", "Des FormID en double dans un même plugin sont invalides et doivent être corrigés. "
-                                         "Des EditorID partagés entre plugins sont souvent normaux (surcharges).")
+        d = ListDialog(self, "Doublons", L("Des FormID en double dans un même plugin sont invalides et doivent être corrigés. Des EditorID partagés entre plugins sont souvent normaux (surcharges)."))
         if dup_i:
-            d.section("FORMID EN DOUBLE DANS UN PLUGIN")
+            d.section(L("FORMID EN DOUBLE DANS UN PLUGIN"))
             for l in dup_i:
                 for r in l:
                     d.record(r, f"  ({r.plugin.name})")
         if dup_e:
-            d.section("EDITORID PARTAGÉS (MÊME NOM, ENREGISTREMENTS DIFFÉRENTS)")
+            d.section(L("EDITORID PARTAGÉS (MÊME NOM, ENREGISTREMENTS DIFFÉRENTS)"))
             for l in dup_e:
                 for r in l:
                     d.record(r, f"  ({r.plugin.name})")
         if not dup_i and not dup_e:
-            d.message("Aucun EditorID ni FormID en double dans les plugins ouverts.")
+            d.message(L("Aucun EditorID ni FormID en double dans les plugins ouverts."))
         d.exec()
 
     def compare_plugins(self):
         if len(self.ws.plugins) < 2:
-            return self.flash("Ouvrez au moins deux plugins pour les comparer")
-        d = ListDialog(self, "Comparer deux plugins",
-                       "Associe les enregistrements par type et EditorID : idéal pour deux versions d'un même plugin.")
+            return self.flash(L("Ouvrez au moins deux plugins pour les comparer"))
+        d = ListDialog(self, L("Comparer deux plugins"),
+                       L("Associe les enregistrements par type et EditorID : idéal pour deux versions d'un même plugin."))
         sa, sb = QComboBox(), QComboBox()
         for s in (sa, sb):
             s.addItems([P.name for P in self.ws.plugins])
@@ -1830,22 +1838,22 @@ class MainWindow(QMainWindow):
             d.lst.clear()
             A, B = self.ws.plugins[sa.currentIndex()], self.ws.plugins[sb.currentIndex()]
             if A is B:
-                return d.message("Choisissez deux plugins différents.")
+                return d.message(L("Choisissez deux plugins différents."))
             added, removed, changed = self.ws.compare_plugins(A, B)
-            for title, lst in ((f"Seulement dans {B.name}", added), (f"Seulement dans {A.name}", removed),
-                               ("Modifiés (même EditorID, sous-enregistrements différents)", changed)):
+            for title, lst in ((L("Seulement dans {name}", name=B.name), added), (L("Seulement dans {name}", name=A.name), removed),
+                               (L("Modifiés (même EditorID, sous-enregistrements différents)"), changed)):
                 if lst:
                     d.section(f"{title.upper()} ({len(lst)})")
                     for r in lst[:200]:
                         d.record(r)
             if not (added or removed or changed):
-                d.message("Aucune différence trouvée par EditorID.")
+                d.message(L("Aucune différence trouvée par EditorID."))
 
         d.top.addWidget(QLabel("A :"))
         d.top.addWidget(sa, 1)
         d.top.addWidget(QLabel("B :"))
         d.top.addWidget(sb, 1)
-        d.top.addWidget(socle_qt.variant(small_button("Comparer", go), "primary"))
+        d.top.addWidget(socle_qt.variant(small_button(L("Comparer"), go), "primary"))
         go()
         d.exec()
 
@@ -1861,9 +1869,9 @@ class MainWindow(QMainWindow):
         if not P:
             return
         d = ListDialog(self, P.name)
-        d.message(f"Enregistrements : {len(P.all) - 1:,}".replace(",", " "))
-        d.message("Maîtres : " + (", ".join(P.masters) if P.masters else "aucun"))
-        d.section("ENREGISTREMENTS PAR TYPE")
+        d.message(L("Enregistrements : {v:,}", v=len(P.all) - 1).replace(",", " "))
+        d.message(L("Maîtres : ") + (", ".join(P.masters) if P.masters else L("aucun")))
+        d.section(L("ENREGISTREMENTS PAR TYPE"))
         for t, n in self.ws.stats(P):
             d.message(f"{t}    {n:,}".replace(",", " "))
         d.exec()
@@ -1872,15 +1880,16 @@ class MainWindow(QMainWindow):
         P = self.active
         if not P:
             return
-        TextDialog(self, f"Journal des modifications — {P.name}",
-                   "\n".join(P.log) if P.log else "Aucune modification enregistrée pendant cette session.",
-                   "Fermer", "Session en cours uniquement.", read_only=True).exec()
+        TextDialog(self, L("Journal des modifications — {name}", name=P.name),
+                   "\n".join(P.log) if P.log else L("Aucune modification enregistrée pendant cette session."),
+                   "Fermer", L("Session en cours uniquement."), read_only=True).exec()
 
 
 def main():
     app = QApplication(sys.argv)
     app.setApplicationName(APP)
     socle_qt.apply(app)
+    init_lang(QSettings(DATA_NAME, DATA_NAME))
     win = MainWindow()
     win.show()
     sys.exit(app.exec())

@@ -11,12 +11,14 @@ import zlib
 from dataclasses import dataclass, field
 from typing import Callable, Iterable
 
+from i18n import L, N_
+
 COMPRESSED = 0x40000
 ESL_FLAG = 0x200
 
-RFLAGS = [(0x20, "Supprimé"), (0x400, "Persistant (surtout REFR)"), (0x800, "Désactivé au départ"),
-          (0x1000, "Ignoré"), (0x40000, "Compressé")]
-TES4FLAGS = [(0x1, "Fichier maître"), (0x80, "Chaînes localisées"), (0x200, "Maître léger (ESL)")]
+RFLAGS = [(0x20, N_("Supprimé")), (0x400, N_("Persistant (surtout REFR)")), (0x800, N_("Désactivé au départ")),
+          (0x1000, N_("Ignoré")), (0x40000, N_("Compressé"))]
+TES4FLAGS = [(0x1, N_("Fichier maître")), (0x80, N_("Chaînes localisées")), (0x200, N_("Maître léger (ESL)"))]
 GROUP_TYPES = ["Top", "World children", "Interior block", "Interior sub-block", "Exterior block",
                "Exterior sub-block", "Cell children", "Topic children", "Cell persistent",
                "Cell temporary", "Cell visible distant"]
@@ -266,7 +268,7 @@ def read_masters(P: Plugin) -> list[str]:
 
 def load_plugin(name: str, data: bytes, dirty: bool = False, t: float = 0.0) -> Plugin:
     if s4(data, 0) != "TES4":
-        raise ValueError("en-tête TES4 absent : ce n'est pas un plugin au format Skyrim")
+        raise ValueError(L("en-tête TES4 absent : ce n'est pas un plugin au format Skyrim"))
     P = Plugin(name=name, root=parse(memoryview(data), 0, len(data)), dirty=dirty, t=t)
     index(P.root, P)
     P.base = snapshot(P)
@@ -302,7 +304,7 @@ def group_type(g: Group) -> str:
 
 def owner(id_: int, P: Plugin) -> str:
     i = id_ >> 24
-    return P.masters[i] if i < len(P.masters) else P.name + " (ce fichier)"
+    return P.masters[i] if i < len(P.masters) else P.name + L(" (ce fichier)")
 
 
 def origin(P: Plugin, id_: int) -> str:
@@ -397,14 +399,14 @@ class Workspace:
             return False
         Q = self.find(o)
         if Q and any(lc(m) == lc(P.name) for m in Q.masters):
-            bad = f"{o} dépend de {P.name} : en faire un maître de {P.name} serait circulaire."
+            bad = L("{o} dépend de {name} : en faire un maître de {name} serait circulaire.", o=o, name=P.name)
         elif not all(r is P.header or r.t == "FLST" for r in P.all):
-            bad = (f"{P.name} ne déclare pas {o} comme maître et contient d'autres enregistrements que des "
-                   "FormLists. Un maître ne peut être ajouté sans risque qu'à un plugin composé de FormLists, "
-                   "car les références internes des autres enregistrements devraient être renumérotées. "
-                   "Ajoutez le maître dans xEdit, puis rouvrez le plugin ici.")
+            bad = L("{name} ne déclare pas {o} comme maître et contient d'autres enregistrements que des "
+                    "FormLists. Un maître ne peut être ajouté sans risque qu'à un plugin composé de FormLists, "
+                    "car les références internes des autres enregistrements devraient être renumérotées. "
+                    "Ajoutez le maître dans xEdit, puis rouvrez le plugin ici.", name=P.name, o=o)
         elif len(P.masters) >= 253:
-            bad = "Trop de maîtres."
+            bad = L("Trop de maîtres.")
         else:
             bad = None
         if bad:
@@ -412,7 +414,7 @@ class Workspace:
                 warn.append(bad)
             no.add(k)
             return False
-        if not self.confirm(f"Ajouter {o} comme maître de {P.name} ?"):
+        if not self.confirm(L("Ajouter {o} comme maître de {name} ?", o=o, name=P.name)):
             no.add(k)
             return False
         self.add_master(P, o)
@@ -430,10 +432,10 @@ class Workspace:
             mx = max(mx, (u32(h.d, 8) - 1) & 0xFFFFFF)
         o = mx + 1
         if (P.header.flags & ESL_FLAG) and o > 0xFFF:
-            self.alert("Ce plugin marqué ESL n'a plus de FormID libre (limite 0xFFF).")
+            self.alert(L("Ce plugin marqué ESL n'a plus de FormID libre (limite 0xFFF)."))
             return None
         if o > 0xFFFFFF or n > 0xFF:
-            self.alert("Plus aucun FormID libre.")
+            self.alert(L("Plus aucun FormID libre."))
             return None
         return ((n << 24) | o) & 0xFFFFFFFF
 
@@ -607,9 +609,9 @@ class Workspace:
         groups = []
         for c, Q in clip:
             if Q is not P and c.t != "FLST":
-                msg = ("Seules les FormLists peuvent être collées dans un autre plugin. Les autres types "
-                       "contiennent des références impossibles à renuméroter sans connaître leur structure. "
-                       "Dans le même plugin, tous les types fonctionnent.")
+                msg = L("Seules les FormLists peuvent être collées dans un autre plugin. Les autres types "
+                        "contiennent des références impossibles à renuméroter sans connaître leur structure. "
+                        "Dans le même plugin, tous les types fonctionnent.")
                 if msg not in warn:
                     warn.append(msg)
                 continue
