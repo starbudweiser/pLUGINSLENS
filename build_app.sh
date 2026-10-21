@@ -38,6 +38,6 @@ ICON_ARGS=()
   "$SRC"
 
 mv "$WORK/dist/${APP_NAME}.app" "$ROOT/${APP_NAME}.app"
-"$(cd "$ROOT/.." && pwd)/_tools/sign_app.sh" "$ROOT/${APP_NAME}.app"  # signature stable (_tools)
+"$(cd "$ROOT/.." && pwd)/_tools/sign_app.sh" "$ROOT/${APP_NAME}.app" 1.0.0  # signature stable (_tools)
 
 echo "OK : $ROOT/${APP_NAME}.app"
