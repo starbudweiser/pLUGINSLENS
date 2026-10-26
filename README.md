@@ -25,6 +25,13 @@ pLUGINSLENS is a lightweight plugin editor for the Mac: open several plugins, se
 - Changes are saved as a **copy**: your original plugin is never overwritten.
 - Interface in **English, French, Italian and Spanish** (follows your Mac's language; can be changed in the app).
 
+### What's new in 1.0.1
+
+
+### Updates
+
+From version 1.0.1 the app checks once a day whether a newer release exists on GitHub and offers to open the Nexus page, remind you later or skip that version. Nothing is downloaded or installed automatically. The full history is in [CHANGELOG.md](CHANGELOG.md).
+
 ### Screenshots
 
 ![Welcome screen](docs/screenshots/01_home.png)
@@ -89,6 +96,13 @@ pLUGINSLENS est un éditeur de plugins léger pour Mac : ouvrez plusieurs plugin
 - Annuler / rétablir, journal des modifications, verrouillage d'un plugin, espaces de travail, restauration de session.
 - Les modifications sont enregistrées dans une **copie** : votre plugin d'origine n'est jamais écrasé.
 - Interface en **français, anglais, italien et espagnol** (suit la langue du Mac ; modifiable dans l'appli).
+
+### Nouveautés de la 1.0.1
+
+
+### Mises à jour
+
+À partir de la version 1.0.1, l'appli vérifie une fois par jour si une version plus récente existe sur GitHub et propose d'ouvrir la page Nexus, de rappeler plus tard ou d'ignorer cette version. Rien n'est téléchargé ni installé automatiquement. L'historique complet est dans [CHANGELOG.md](CHANGELOG.md).
 
 ### Captures d'écran
 
