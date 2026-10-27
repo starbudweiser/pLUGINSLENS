@@ -1891,6 +1891,7 @@ def main():
     app = QApplication(sys.argv)
     app.setApplicationName(APP)
     socle_qt.apply(app)
+    socle_qt.brand(app, "pLUGINSLENS", "#f5b921")  # « p » dans le jaune du logo
     init_lang(QSettings(DATA_NAME, DATA_NAME))
     win = MainWindow()
     win.show()

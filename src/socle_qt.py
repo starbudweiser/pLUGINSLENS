@@ -10,8 +10,11 @@ Utilisation :
     socle_qt.variant(bouton, "primary")          # primary | action | secondary | tertiary
     socle_qt.role(label, "title")                # title | heading | display | eyebrow | meta | mono | path | muted | subtle
     socle_qt.status(label, "success")            # success | warning | danger | none (+ repolish auto)
+    socle_qt.brand(app, "sKYCRASH", "#ff7a00")   # initiale du nom de l'appli dans la couleur de son logo
 """
+import html
 import os
+import re
 import tempfile
 
 from PyQt6.QtGui import QColor, QFont, QFontDatabase, QPalette
@@ -47,7 +50,6 @@ TOKENS = {'version': 1,
                      'accent-fill-pressed': '#0c4a6e',
                      'on-accent-fill': '#ffffff',
                      'accent-text': '#38bdf8',
-                     'accent-tint': '#0c3a52',
                      'action': '#fbbf24',
                      'action-hover': '#f59e0b',
                      'action-pressed': '#d97706',
@@ -95,7 +97,6 @@ TOKENS = {'version': 1,
                       'accent-fill-pressed': '#0c4a6e',
                       'on-accent-fill': '#ffffff',
                       'accent-text': '#0369a1',
-                      'accent-tint': '#e0f2fe',
                       'action': '#fbbf24',
                       'action-hover': '#f59e0b',
                       'action-pressed': '#d97706',
@@ -138,6 +139,9 @@ TOKENS = {'version': 1,
              'size-choice': 16,
              'size-scrollbar': 8,
              'size-sidebar-min': 200,
+             'size-splash-width': 500,
+             'size-splash-height': 190,
+             'size-splash-title': 40,
              'opacity-disabled': 0.4},
  'type': {'display': {'family': 'sans', 'size': 20, 'weight': 700},
           'heading': {'family': 'sans', 'size': 16, 'weight': 700},
@@ -297,6 +301,69 @@ def fit_height(window: QWidget) -> QWidget:
     window._socle_fit = _FitHeight(window)
     window.installEventFilter(window._socle_fit)
     return window
+
+
+# Nom de l'appli : son initiale en minuscule (le « m » de mORTEX, le « s » de sKYCRASH, « cs » de
+# csSETTINGS…) prend la couleur de son logo partout où le nom est écrit dans un QLabel (titres, textes,
+# dialogues, QMessageBox). Titres de fenêtre, menus et boutons natifs n'affichent pas de texte riche.
+_brand: dict = {}
+_QLABEL_SET_TEXT = QLabel.setText
+
+
+def _brand_sub(fragment: str) -> str:
+    for rx in _brand["res"]:
+        fragment = rx.sub(lambda mt: _brand["span"].format(mt.group(1)) + mt.group(2), fragment)
+    return fragment
+
+
+def brand_html(text: str) -> str:
+    """Texte (brut ou riche) avec l'initiale du nom de l'appli colorée, pour un widget en texte riche."""
+    if not _brand or not any(rx.search(text) for rx in _brand["res"]):
+        return text
+    if re.search(r"<[A-Za-z!/]", text):
+        return "".join(part if part.startswith("<") else _brand_sub(part) for part in re.split(r"(<[^>]*>)", text))
+    return _brand_sub(html.escape(text, quote=False)).replace("\n", "<br>")
+
+
+def _brand_label(label: QLabel, text: str) -> str:
+    out = brand_html(text)
+    if out != text:
+        label.setTextFormat(Qt.TextFormat.RichText)
+    return out
+
+
+class _BrandFilter(QObject):
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.Type.Show and isinstance(obj, QLabel):
+            text = obj.text()
+            out = _brand_label(obj, text)
+            if out != text:
+                _QLABEL_SET_TEXT(obj, out)
+        return False
+
+
+def brand(app: QApplication, names, color: str) -> None:
+    """Colore l'initiale minuscule du nom de l'appli dans tous ses QLabel.
+
+    names : nom de l'appli (« sKYCRASH ») ou liste de graphies (« fOMODSIM », « fOMOD_SIM ») ;
+    color : couleur du logo. Couvre les textes posés par setText() et ceux des dialogues Qt
+    (relus à l'affichage). Pour un autre widget à texte riche, passer par brand_html().
+    """
+    rxs = []
+    for name in [names] if isinstance(names, str) else names:
+        head = re.match(r"[a-z]+", name)
+        if head:  # pas dans un mot, un chemin, un identifiant de paquet ni une adresse
+            rxs.append(re.compile(rf"(?<![\w.@/-])({re.escape(head.group())})({re.escape(name[head.end():])})(?![\w-])"))
+    if not rxs:
+        return
+    _brand.update(res=rxs, span=f'<span style="color:{color}">{{}}</span>')
+
+    def set_text(label, text):
+        _QLABEL_SET_TEXT(label, _brand_label(label, text) if isinstance(text, str) else text)
+
+    QLabel.setText = set_text
+    app._socle_brand = _BrandFilter(app)
+    app.installEventFilter(app._socle_brand)
 
 
 def _icons_dir(theme: str) -> str:
