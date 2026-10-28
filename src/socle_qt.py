@@ -68,6 +68,13 @@ TOKENS = {'version': 1,
                      'danger-soft': '#fecaca',
                      'info-border': '#38bdf8',
                      'info-soft': '#bae6fd',
+                     'bubble-help': '#0ea5e9',
+                     'bubble-tip': '#22c55e',
+                     'bubble-warning': '#fbbf24',
+                     'bubble-danger': '#ef4444',
+                     'bubble-ai': '#f59e0b',
+                     'on-bubble': '#1a1a1a',
+                     'bubble-icon': '#262626',
                      'focus-ring': '#38bdf8',
                      'scrim': 'rgba(0, 0, 0, 0.75)'},
             'light': {'bg': '#f2f2f2',
@@ -115,6 +122,13 @@ TOKENS = {'version': 1,
                       'danger-soft': '#7f1d1d',
                       'info-border': '#0284c7',
                       'info-soft': '#0c4a6e',
+                      'bubble-help': '#0ea5e9',
+                      'bubble-tip': '#22c55e',
+                      'bubble-warning': '#fbbf24',
+                      'bubble-danger': '#ef4444',
+                      'bubble-ai': '#f59e0b',
+                      'on-bubble': '#1a1a1a',
+                      'bubble-icon': '#262626',
                       'focus-ring': '#0369a1',
                       'scrim': 'rgba(17, 17, 17, 0.45)'}},
  'metrics': {'space-1': 4,
@@ -435,7 +449,7 @@ def _qss(theme: str) -> str:
     return f"""
 QWidget {{ background-color: {k['bg']}; color: {k['text']}; font-size: {TOKENS['type']['body']['size']}px; selection-background-color: {k['accent-fill']}; selection-color: {k['on-accent-fill']}; }}
 QLabel {{ background: transparent; }}
-QToolTip {{ background-color: {k['surface-raised']}; color: {k['text']}; border: 1px solid {k['border']}; border-radius: {r}px; padding: 4px 8px; }}
+QToolTip {{ background-color: {k['bubble-help']}; color: {k['on-bubble']}; border: 0; border-radius: 6px; padding: 8px 10px; }}
 
 /* Panneaux */
 QFrame[panel="true"] {{ background-color: {k['surface']}; border: 1px solid {k['border']}; border-radius: {rmd}px; }}
@@ -570,8 +584,8 @@ def palette(theme: str = "dark") -> QPalette:
         QPalette.ColorRole.ButtonText: k["text-strong"],
         QPalette.ColorRole.Highlight: k["accent-fill"],
         QPalette.ColorRole.HighlightedText: k["on-accent-fill"],
-        QPalette.ColorRole.ToolTipBase: k["surface-raised"],
-        QPalette.ColorRole.ToolTipText: k["text"],
+        QPalette.ColorRole.ToolTipBase: k["bubble-help"],
+        QPalette.ColorRole.ToolTipText: k["on-bubble"],
         QPalette.ColorRole.PlaceholderText: k["text-subtle"],
         QPalette.ColorRole.Link: k["accent-text"],
     }
