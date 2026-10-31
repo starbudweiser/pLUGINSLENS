@@ -672,7 +672,7 @@ class MainWindow(QMainWindow):
         self.q = QLineEdit()
         self.q.setPlaceholderText(L("Rechercher un EditorID, un FormID ou un type"))
         self.q.setClearButtonEnabled(True)
-        self.q.setMinimumWidth(260)
+        self.q.setMinimumWidth(300)
         self.q.textChanged.connect(lambda _: self.rebuild_tree())
         hb.addWidget(self.q)
         self.sortmode = QComboBox()
@@ -680,8 +680,8 @@ class MainWindow(QMainWindow):
         self.sortmode.currentIndexChanged.connect(self.change_sort)
         hb.addWidget(self.sortmode)
         self.typefilter = QLineEdit()
-        self.typefilter.setPlaceholderText(L("Filtrer les groupes : WEAP, ARMO…"))
-        self.typefilter.setMaximumWidth(220)
+        self.typefilter.setPlaceholderText(L("Groupes : WEAP, ARMO…"))
+        self.typefilter.setMinimumWidth(170)
         self.typefilter.textChanged.connect(self.change_filter)
         hb.addWidget(self.typefilter)
         # Statut : prend la place libre et se laisse rogner quand l'en-tête est serré
@@ -1447,7 +1447,7 @@ class MainWindow(QMainWindow):
             lay.addLayout(row)
 
         def add():
-            t = PickDialog.get(self, "Choisissez un enregistrement KYWD.")
+            t = PickDialog.get(self, L("Choisissez un enregistrement KYWD."))
             if not t:
                 return
             x = self.xref_with_master(t, P)

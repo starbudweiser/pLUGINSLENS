@@ -5,6 +5,7 @@ tests/test_i18n.py).
 """
 
 TR = {
+    "Choisissez un enregistrement KYWD.": ("Choose a KYWD record.", "Scegli un record KYWD.", "Elige un registro KYWD."),
     # ------------------------------------------------------------ fenêtre, menus
     "{APP} · éditeur ESP/ESM": ("{APP} · ESP/ESM editor", "{APP} · editor ESP/ESM", "{APP} · editor ESP/ESM"),
     "Ouvrir des plugins": ("Open plugins", "Apri plugin", "Abrir plugins"),
@@ -13,7 +14,7 @@ TR = {
     "Ordre du fichier": ("File order", "Ordine del file", "Orden del archivo"),
     "Tri : EditorID": ("Sort: EditorID", "Ordina: EditorID", "Orden: EditorID"),
     "Tri : FormID": ("Sort: FormID", "Ordina: FormID", "Orden: FormID"),
-    "Filtrer les groupes : WEAP, ARMO…": ("Filter groups: WEAP, ARMO…", "Filtra i gruppi: WEAP, ARMO…", "Filtrar grupos: WEAP, ARMO…"),
+    "Groupes : WEAP, ARMO…": ("Groups: WEAP, ARMO…", "Gruppi: WEAP, ARMO…", "Grupos: WEAP, ARMO…"),
     "Fichier": ("File", "File", "Archivo"),
     "Ouvrir des plugins…": ("Open plugins…", "Apri plugin…", "Abrir plugins…"),
     "Enregistrer une copie…": ("Save a copy…", "Salva una copia…", "Guardar una copia…"),
