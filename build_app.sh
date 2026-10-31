@@ -32,6 +32,9 @@ rm -rf "$ROOT/${APP_NAME}.app"
 ICON_ARGS=()
 [[ -f "$ICON" ]] && ICON_ARGS=(--icon "$ICON")
 
+# Lanceur PyInstaller compilé depuis les sources, contre les faux positifs antivirus (absent hors de ce dossier d'outils : lanceur standard).
+PYI_SRC="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/_tools/pyinstaller_source.sh"
+if [ -x "$PYI_SRC" ]; then "$PYI_SRC" "$PY"; fi
 "$PY" -m PyInstaller --noconfirm --clean --windowed --onedir \
   --name "$APP_NAME" ${ICON_ARGS[@]+"${ICON_ARGS[@]}"} \
   --distpath "$WORK/dist" --workpath "$WORK/build" --specpath "$WORK" \
@@ -42,7 +45,7 @@ mv "$WORK/dist/${APP_NAME}.app" "$ROOT/${APP_NAME}.app"
 # le dépôt GitHub seul), signature ad hoc pour que l'appli se lance quand même.
 SIGN_APP="$(cd "$ROOT/.." && pwd)/_tools/sign_app.sh"
 if [ -x "$SIGN_APP" ]; then
-    "$SIGN_APP" "$ROOT/${APP_NAME}.app" 1.0.1
+    "$SIGN_APP" "$ROOT/${APP_NAME}.app" 1.3.0
 else
     echo "_tools/sign_app.sh absent : signature ad hoc."
     codesign --force --deep --sign - "$ROOT/${APP_NAME}.app"
