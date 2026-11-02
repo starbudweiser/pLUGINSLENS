@@ -22,7 +22,7 @@ from PyQt6.QtWidgets import (
 
 import plugin_core as pc
 import socle_qt
-import update_check
+import updater
 from i18n import get_lang
 from i18n import L
 from lang_button import LangButton, init_lang
@@ -1895,7 +1895,7 @@ def main():
     init_lang(QSettings(DATA_NAME, DATA_NAME))
     win = MainWindow()
     win.show()
-    update_check.start_qt(win, "pLUGINSLENS", lang=get_lang)  # nouvelle version ? (au plus une fois par jour)
+    updater.start_qt(win, "pLUGINSLENS", lang=get_lang)  # nouvelle version ? (au plus une fois par jour)
     sys.exit(app.exec())
 
 
