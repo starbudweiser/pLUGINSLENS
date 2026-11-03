@@ -25,7 +25,7 @@ import socle_qt
 import updater
 from i18n import get_lang
 from i18n import L
-from lang_button import LangButton, init_lang
+from app_lang import init_lang, install_menu
 
 APP = "pLUGINSLENS"
 DATA_NAME = "PluginLens"  # réglages et session déjà enregistrés sous ce nom : ne pas renommer
@@ -689,8 +689,6 @@ class MainWindow(QMainWindow):
         self.st.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Preferred)
         self.st.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
         hb.addWidget(self.st, 1)
-        self.btn_lang = LangButton(self.settings, self.language_changed)
-        hb.addWidget(self.btn_lang)
         root.addWidget(bar)
 
         self.split = QSplitter(Qt.Orientation.Horizontal)
@@ -761,6 +759,7 @@ class MainWindow(QMainWindow):
         self.a_tree.setChecked(self.tree.isVisible())
 
         self.ws_menu = mb.addMenu(L("Espaces de travail"))
+        install_menu(self, self.settings, self.language_changed)  # menu « Langue »
 
     def focus_search(self):
         if not isinstance(QApplication.focusWidget(), (QLineEdit, QPlainTextEdit)):

@@ -39,8 +39,6 @@ TR = {
     "Afficher l'arbre": ("Show tree", "Mostra l'albero", "Mostrar el árbol"),
     "Espaces de travail": ("Workspaces", "Aree di lavoro", "Espacios de trabajo"),
     "Enregistrer l'espace de travail…": ("Save workspace…", "Salva l'area di lavoro…", "Guardar el espacio de trabajo…"),
-    "Langue : {name}": ("Language: {name}", "Lingua: {name}", "Idioma: {name}"),
-    "Automatique ({lang})": ("Automatic ({lang})", "Automatica ({lang})", "Automático ({lang})"),
     "La langue sera appliquée au prochain lancement de {app}. Relancer maintenant ?": (
         "The language will apply the next time {app} starts. Restart now?",
         "La lingua verrà applicata al prossimo avvio di {app}. Riavviare ora?",
