@@ -1,9 +1,10 @@
-"""Parité octet pour octet entre le cœur Python et le code JavaScript d'origine de Plugin Lens.
+"""Parité octet pour octet entre le cœur Swift (LensCore), le cœur Python et le code JavaScript d'origine de Plugin Lens.
 
 Pour chaque plugin, le même scénario (lecture, écriture, FormList, ajout d'entrées, clonage,
 import/export, copier-coller, annulation, ajout de maître, collage inter-plugins) est exécuté :
 - par le code JavaScript d'origine sous Node.js (tests/parity/*.js) ;
-- par plugin_core.py.
+- par plugin_core.py (si src/plugin_core.py existe encore) ;
+- par l'exécutable Swift `lens-parity` (macos/, compilé avec `swift build -c release`).
 Les empreintes SHA-256 des fichiers produits à chaque étape doivent être identiques.
 
 Usage :
@@ -21,7 +22,10 @@ import tempfile
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, "..", "src"))
 
-import plugin_core as pc  # noqa: E402
+try:
+    import plugin_core as pc  # noqa: E402
+except ImportError:  # version Python retirée : on compare Swift et JavaScript
+    pc = None
 
 PARITY = os.path.join(HERE, "parity")
 
@@ -44,6 +48,14 @@ def empty_plugin(path: str) -> None:
 
 def py_scenario(path_x: str, path_e: str) -> dict:
     out = {"steps": {}, "texts": {}, "alerts": 0}
+    try:
+        _py_steps(out, path_x, path_e)
+    except Exception as e:  # erreur : les étapes déjà faites restent comparables
+        out["error"] = repr(e)
+    return out
+
+
+def _py_steps(out: dict, path_x: str, path_e: str) -> None:
     alerts = []
     ws = pc.Workspace(confirm=lambda m: True, alert=alerts.append)
 
@@ -96,11 +108,29 @@ def py_scenario(path_x: str, path_e: str) -> dict:
     ws.paste_records(E, clip); h("E_paste", E)
     ws.fix_hedr(E); h("E_save", E)
     out["texts"]["E_export"] = ws.export_list(flE)
-    return out
+
+
+def swift_binary() -> str | None:
+    env = os.environ.get("LENS_PARITY")
+    if env:
+        return env
+    path = os.path.join(HERE, "..", "macos", ".build", "release", "lens-parity")
+    return path if os.path.exists(path) else None
+
+
+def swift_scenario(binary: str, path_x: str, path_e: str) -> dict:
+    r = subprocess.run([binary, path_x, path_e], capture_output=True, text=True)
+    return json.loads(r.stdout)
+
+
+def compare(ref: dict, mine: dict) -> list[str]:
+    diffs = [k for k in ref["steps"] if ref["steps"][k] != mine["steps"].get(k)]
+    return diffs + [f"text:{k}" for k in ref["texts"] if ref["texts"][k] != mine["texts"].get(k)]
 
 
 def run(paths: list[str]) -> int:
     harness = harness_path()
+    swift = swift_binary()
     tmp = tempfile.mkdtemp(prefix="pl_parity_")
     path_e = os.path.join(tmp, "PL_Empty.esp")
     empty_plugin(path_e)
@@ -113,28 +143,31 @@ def run(paths: list[str]) -> int:
             print(f"SKIP  {path}  (sortie JS illisible : {js.stderr[-200:]})")
             skip += 1
             continue
-        if ref.get("error"):
+        impls = []
+        if pc is not None:
+            impls.append(("Python", lambda: py_scenario(path, path_e)))
+        if swift:
+            impls.append(("Swift", lambda: swift_scenario(swift, path, path_e)))
+        problems = []
+        for name, fn in impls:
             try:
-                py_scenario(path, path_e)
-                print(f"DIFF  {path}  JS en erreur, Python non : {ref['error'][:160]}")
-                fail += 1
-            except Exception as e:  # les deux échouent : comportement identique
-                print(f"SAME-ERR {path}  ({str(e)[:80]})")
-                ok += 1
-            continue
-        try:
-            mine = py_scenario(path, path_e)
-        except Exception as e:
-            print(f"FAIL  {path}  Python en erreur : {e!r}")
-            fail += 1
-            continue
-        diffs = [k for k in ref["steps"] if ref["steps"][k] != mine["steps"].get(k)]
-        diffs += [f"text:{k}" for k in ref["texts"] if ref["texts"][k] != mine["texts"].get(k)]
-        if diffs:
-            print(f"FAIL  {path}  étapes différentes : {', '.join(diffs)}")
+                mine = fn()
+            except Exception as e:
+                problems.append(f"{name} en erreur : {e!r}")
+                continue
+            if bool(mine.get("error")) != bool(ref.get("error")):
+                problems.append(f"{name} : erreur {'absente' if ref.get('error') else 'inattendue'} ({(mine.get('error') or ref['error'])[:100]})")
+                continue
+            d = compare(ref, mine)
+            if ref.get("error"):  # les deux échouent : mêmes étapes avant l'erreur
+                d += [k for k in mine["steps"] if k not in ref["steps"]]
+            if d:
+                problems.append(f"{name} : étapes différentes : {', '.join(d)}")
+        if problems:
+            print(f"FAIL  {path}  " + " ; ".join(problems))
             fail += 1
         else:
-            print(f"OK    {path}  ({len(ref['steps'])} étapes)")
+            print(f"{'SAME-ERR' if ref.get('error') else 'OK'}    {path}  ({len(ref['steps'])} étapes, {'+'.join(n for n, _ in impls)})")
             ok += 1
     print(f"\n{ok} identiques, {fail} différents, {skip} ignorés")
     return 1 if fail else 0
