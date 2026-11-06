@@ -114,9 +114,9 @@ struct CompareBar: View {
     var body: some View {
         @Bindable var s = sel
         HStack(spacing: 8) {
-            Text("A :").socle(Socle.T.body).foregroundStyle(Socle.C.text)
+            Text(L("A :")).socle(Socle.T.body).foregroundStyle(Socle.C.text)
             Picker("", selection: $s.a) { ForEach(Array(names.enumerated()), id: \.offset) { Text($1).tag($0) } }.labelsHidden()
-            Text("B :").socle(Socle.T.body).foregroundStyle(Socle.C.text)
+            Text(L("B :")).socle(Socle.T.body).foregroundStyle(Socle.C.text)
             Picker("", selection: $s.b) { ForEach(Array(names.enumerated()), id: \.offset) { Text($1).tag($0) } }.labelsHidden()
             SmallButton(L("Comparer"), variant: .primary, action: go)
         }

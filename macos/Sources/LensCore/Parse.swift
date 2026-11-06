@@ -68,7 +68,7 @@ func parseNodes(_ u: Bytes, _ start: Int, _ end: Int) throws -> [Node] {
         let t = s4(u, p)
         let sz = Int(try u32(u, p + 4))
         if t == "GRUP" {
-            guard sz >= 24 else { throw LensError.invalid("groupe de taille \(sz)") }
+            guard sz >= 24 else { throw LensError.invalid(L("groupe de taille invalide ({sz})", ["sz": sz])) }
             let kids = try parseNodes(u, p + 24, p + sz)
             out.append(GroupNode(label: sl(u, p + 8, p + 12), tail: sl(u, p + 12, p + 24),
                              kids: NodeList(kids)))

@@ -1173,5 +1173,30 @@
   "{name} · {v} records · {n} masters",
   "{name} · {v} record · {n} master",
   "{name} · {v} registros · {n} másteres"
+ ],
+ "données tronquées ({w})": [
+  "truncated data ({w})",
+  "dati troncati ({w})",
+  "datos truncados ({w})"
+ ],
+ "erreur de décompression zlib ({c})": [
+  "zlib decompression error ({c})",
+  "errore di decompressione zlib ({c})",
+  "error de descompresión zlib ({c})"
+ ],
+ "groupe de taille invalide ({sz})": [
+  "invalid group size ({sz})",
+  "dimensione del gruppo non valida ({sz})",
+  "tamaño de grupo no válido ({sz})"
+ ],
+ "A :": [
+  "A:",
+  "A:",
+  "A:"
+ ],
+ "B :": [
+  "B:",
+  "B:",
+  "B:"
  ]
 }

@@ -13,8 +13,8 @@ public enum LensError: Error, CustomStringConvertible {
     public var description: String {
         switch self {
         case .notPlugin: return L("en-tête TES4 absent : ce n'est pas un plugin au format Skyrim")
-        case .truncated(let w): return "données tronquées (\(w))"
-        case .zlib(let c): return "erreur zlib \(c)"
+        case .truncated(let w): return L("données tronquées ({w})", ["w": w])
+        case .zlib(let c): return L("erreur de décompression zlib ({c})", ["c": c])
         case .invalid(let m): return m
         }
     }

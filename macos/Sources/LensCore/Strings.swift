@@ -236,4 +236,9 @@ let translations: [String: [String]] = [
     "OK": ["OK", "OK", "OK"],
     "Lit, édite et compare les plugins Skyrim (.esp / .esm / .esl) : enregistrements, FormLists, annulation.": ["Reads, edits and compares Skyrim plugins (.esp / .esm / .esl): records, FormLists, undo.", "Legge, modifica e confronta i plugin di Skyrim (.esp / .esm / .esl): record, FormList, annullamento.", "Lee, edita y compara los plugins de Skyrim (.esp / .esm / .esl): registros, FormLists, deshacer."],
     "{name} · {v} enregistrements · {n} maîtres": ["{name} · {v} records · {n} masters", "{name} · {v} record · {n} master", "{name} · {v} registros · {n} másteres"],
+    "données tronquées ({w})": ["truncated data ({w})", "dati troncati ({w})", "datos truncados ({w})"],
+    "erreur de décompression zlib ({c})": ["zlib decompression error ({c})", "errore di decompressione zlib ({c})", "error de descompresión zlib ({c})"],
+    "groupe de taille invalide ({sz})": ["invalid group size ({sz})", "dimensione del gruppo non valida ({sz})", "tamaño de grupo no válido ({sz})"],
+    "A :": ["A:", "A:", "A:"],
+    "B :": ["B:", "B:", "B:"],
 ]
