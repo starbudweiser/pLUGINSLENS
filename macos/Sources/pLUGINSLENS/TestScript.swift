@@ -33,13 +33,22 @@ enum TestScript {
             case "newfl": model.newFormlist()
             case "undo": model.undo(true)
             case "redo": model.undo(false)
+            case "sbs": model.compareRecords()
+            case "stats": model.showStats()
+            case "dups": model.findDuplicates()
+            case "cmp": model.comparePlugins()
+            case "wlog": model.showLog()
+            case "where": if let r = model.cur { model.whereUsed(r) }
+            case "pick": model.pickRecord { r in FileHandle.standardError.write(Data("PICK: \(r.map { edid($0) } ?? "nil")\n".utf8)) }
+            case "expand": if let P = model.active { model.tree?.expand(P) }
+            case "deselect": model.tree?.outline.deselectAll(nil)
             case "copy": model.copyRecords()
             case "paste": model.pasteRecords()
             case "active": if let P = model.ws.plugins.first(where: { $0.name == arg }) { model.active = P; model.status() }
             case "savecopy": if let P = model.active { model.saveCopy(P, to: URL(fileURLWithPath: arg)) }
             case "lang": model.settings.set("language", arg); I18n.setLang(LangChoice.resolve(arg)); model.retranslate()
             case "quit": NSApp.terminate(nil)
-            case "log": FileHandle.standardError.write(Data("SCRIPT: \(arg) | plugins=\(model.ws.plugins.map { "\($0.name)[\($0.all.count)\($0.dirty ? "*" : "")]" }) cur=\(model.cur.map { "\($0.t) \(edid($0))" } ?? "-")\n".utf8))
+            case "log": FileHandle.standardError.write(Data("SCRIPT: \(arg) | plugins=\(model.ws.plugins.map { "\($0.name)[\($0.all.count)\($0.dirty ? "*" : "")]" }) clip=\(model.clip.count) status=\(model.statusText) cur=\(model.cur.map { "\($0.t) \(edid($0))" } ?? "-")\n".utf8))
             default: break
             }
             DispatchQueue.main.asyncAfter(deadline: .now() + delay) { next() }

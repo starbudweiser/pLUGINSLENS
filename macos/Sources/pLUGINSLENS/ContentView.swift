@@ -72,7 +72,7 @@ struct ContentView: View {
             Text(Socle.branded(APP)).socle(Socle.T.title).foregroundStyle(Socle.C.textStrong)
             SmallButton(L("Ouvrir des plugins"), variant: .action) { model.openDialog() }
             TextField(L("Rechercher un EditorID, un FormID ou un type"), text: $m.query)
-                .socleField().frame(minWidth: 300, maxWidth: 380).focused($searchFocus)
+                .socleField().frame(width: 300).focused($searchFocus)
                 .disabled(!model.hasPlugins)
                 .onChange(of: model.query) { _, _ in model.tree?.reload() }
             Picker("", selection: Binding(get: { model.sortMode }, set: { model.sortMode = $0; model.tree?.reload() })) {
@@ -82,7 +82,7 @@ struct ContentView: View {
             }
             .labelsHidden().fixedSize().disabled(!model.hasPlugins)
             TextField(L("Groupes : WEAP, ARMO…"), text: $filterText)
-                .socleField().frame(minWidth: 170, maxWidth: 220).disabled(!model.hasPlugins)
+                .socleField().frame(width: 170).disabled(!model.hasPlugins)
                 .onChange(of: filterText) { _, t in
                     model.typeFilter = t.split(separator: ",", omittingEmptySubsequences: true)
                         .map { pyStrip(String($0)).uppercased() }.filter { !$0.isEmpty }

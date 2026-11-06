@@ -75,11 +75,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, NSMe
         if let out = env["PLUGINSLENS_SNAPSHOT"] {
             let delay = Double(env["PLUGINSLENS_DELAY"] ?? "") ?? 2
             DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [self] in
-                let view = window.contentView!
-                if let rep = view.bitmapImageRepForCachingDisplay(in: view.bounds) {
-                    view.cacheDisplay(in: view.bounds, to: rep)
-                    try? rep.representation(using: .png, properties: [:])?.write(to: URL(fileURLWithPath: out))
+                func shot(_ w: NSWindow, _ path: String) {
+                    let view = w.contentView!
+                    if let rep = view.bitmapImageRepForCachingDisplay(in: view.bounds) {
+                        view.cacheDisplay(in: view.bounds, to: rep)
+                        try? rep.representation(using: .png, properties: [:])?.write(to: URL(fileURLWithPath: path))
+                    }
                 }
+                shot(window, out)
+                if let sheet = window.attachedSheet { shot(sheet, out + ".sheet.png") }
                 quitConfirmed = true
                 NSApp.terminate(nil)
             }

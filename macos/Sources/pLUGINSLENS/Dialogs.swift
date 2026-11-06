@@ -21,7 +21,9 @@ final class SheetHost: NSObject, NSWindowDelegate {
         window.title = title
         window.isReleasedWhenClosed = false
         window.delegate = self
-        window.contentView = NSHostingView(rootView: content(self).background(Socle.C.bg))
+        let hv = NSHostingView(rootView: content(self).background(Socle.C.bg))
+        hv.sizingOptions = []
+        window.contentView = hv
         window.setContentSize(size)
         window.contentMinSize = NSSize(width: min(size.width, 360), height: min(size.height, 240))
     }

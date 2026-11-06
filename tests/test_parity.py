@@ -20,7 +20,7 @@ import sys
 import tempfile
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, os.path.join(HERE, "..", "src"))
+sys.path.insert(0, os.path.join(HERE, "..", "src"))  # cœur Python d'origine, retiré : voir l'historique git (commit 0b48cf4)
 
 try:
     import plugin_core as pc  # noqa: E402
