@@ -31,10 +31,14 @@ pLUGINSLENS is a lightweight plugin editor for the Mac: open several plugins, se
 - Changes are saved as a **copy**: your original plugin is never overwritten.
 - Interface in **English, French, Italian and Spanish** (follows your Mac's language; can be changed in the app).
 
-### What's new in 1.3.0
+### What's new in 1.3.1
+
+- Rewritten in native Swift (SwiftUI), replacing the Python/PyInstaller version that antivirus scanners tended to flag. Same features; your saved settings and remembered plugins carry over. New app icon.
+
+### 1.3.0
 
 - Signed with a Developer ID and notarized by Apple: macOS now opens the app without a security warning.
-- Rewritten in native Swift (SwiftUI), replacing the Python/PyInstaller version that antivirus scanners tended to flag. Same features; your saved settings and remembered plugins carry over. New app icon.
+- The app's launcher is now compiled from source when the app is built, instead of using PyInstaller's generic prebuilt launcher, which antivirus scanners tend to flag. No change in features.
 - The first letter of the app's name now uses the colour of its logo everywhere it appears.
 - Version number aligned across the Skyrim Mac Toolkit.
 
@@ -105,10 +109,14 @@ pLUGINSLENS est un éditeur de plugins léger pour Mac : ouvrez plusieurs plugin
 - Les modifications sont enregistrées dans une **copie** : votre plugin d'origine n'est jamais écrasé.
 - Interface en **français, anglais, italien et espagnol** (suit la langue du Mac ; modifiable dans l'appli).
 
-### Nouveautés de la 1.3.0
+### Nouveautés de la 1.3.1
+
+- Réécrite en Swift natif (SwiftUI), à la place de la version Python/PyInstaller souvent signalée par les antivirus. Mêmes fonctions ; vos réglages et plugins mémorisés sont repris. Nouvelle icône.
+
+### 1.3.0
 
 - Signée avec un certificat Developer ID et notarisée par Apple : macOS ouvre désormais l'appli sans avertissement de sécurité.
-- Réécrite en Swift natif (SwiftUI), à la place de la version Python/PyInstaller souvent signalée par les antivirus. Mêmes fonctions ; vos réglages et plugins mémorisés sont repris. Nouvelle icône.
+- Le lanceur de l'appli est maintenant compilé depuis les sources à la construction de l'appli, au lieu du lanceur générique précompilé de PyInstaller, souvent signalé par les antivirus. Aucun changement de fonctionnalités.
 - La première lettre du nom de l'appli prend la couleur de son logo partout où il est écrit.
 - Numéro de version commun à tout le Skyrim Mac Toolkit.
 
