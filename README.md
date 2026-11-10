@@ -2,29 +2,21 @@
 
 # pLUGINSLENS
 
-[![Listed on OpenMacApps](https://openmacapps.com/badge.svg)](https://openmacapps.com/apps/pluginslens/)
+[![Listed on OpenMacApps](https://openmacapps.com/badge.svg)](https://openmacapps.com/apps/pluginslens/) [![Latest release](https://img.shields.io/github/v/release/starbudweiser/pLUGINSLENS)](https://github.com/starbudweiser/pLUGINSLENS/releases/latest) [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
-**Skyrim plugin editor (.esp / .esm / .esl) for macOS: browse, compare and edit records.**  
-*Éditeur de plugins Skyrim (.esp / .esm / .esl) pour macOS : parcourir, comparer et modifier les enregistrements.*
+**Skyrim plugin editor (.esp / .esm / .esl) for macOS: browse, compare and edit records.**
 
-🍏 **Native Mac app written in Swift, signed and notarized by Apple.** · *Appli Mac native écrite en Swift, signée et notarisée par Apple.*
+🇬🇧 English · 🇫🇷 [Français](#français)
 
-🇬🇧 [English](#-english) · 🇫🇷 [Français](#-français)
-
-💬 **Support & community:** [Discord](https://discord.gg/xdDVDPQsYs) · *Aide et communauté : [Discord](https://discord.gg/xdDVDPQsYs)*
-
-### About
+## About
 
 pLUGINSLENS reads, edits and compares Skyrim plugins (.esp / .esm / .esl). By Starbudweiser & Claude Code (Anthropic). MIT License, © 2026 Starbudweiser. Provided as is, without warranty of any kind. See **About pLUGINSLENS** in the app menu.
 
----
-## 🇬🇧 English
-
-### What it does
+🍏 **Native Mac app written in Swift, signed and notarized by Apple.**
 
 pLUGINSLENS is a lightweight plugin editor for the Mac: open several plugins, search records by EditorID, FormID or type, edit subrecords, FormLists, keywords and globals, and compare plugins — everything is analyzed locally, no Skyrim install needed. It is not a replacement for xEdit for heavy work, but covers everyday checks and small fixes.
 
-### Features
+## Features
 
 - Open several plugins at once; tree by group, sort by file order, EditorID or FormID, group filter.
 - Record sheet: FormID, flags (deleted, persistent, ESL…), owner plugin, every subrecord in text or hexadecimal.
@@ -46,10 +38,6 @@ pLUGINSLENS is a lightweight plugin editor for the Mac: open several plugins, se
 - The first letter of the app's name now uses the colour of its logo everywhere it appears.
 - Version number aligned across the Skyrim Mac Toolkit.
 
-### Updates
-
-The app checks once a day whether a newer release exists on GitHub and offers to open the Nexus page, remind you later or skip that version. Nothing is downloaded or installed automatically. The full history is in [CHANGELOG.md](CHANGELOG.md).
-
 ### Screenshots
 
 ![Welcome screen](docs/screenshots/01_home.png)
@@ -60,6 +48,10 @@ The app checks once a day whether a newer release exists on GitHub and offers to
 
 ![FormList editor](docs/screenshots/03_formlist.png)
 *FormList editor*
+
+## Install
+
+**[Download the latest notarized release](https://github.com/starbudweiser/pLUGINSLENS/releases/latest)** · requires **macOS 15 Sequoia** or later on Apple Silicon.
 
 ### Requirements
 
@@ -77,12 +69,11 @@ A Mac with **Apple Silicon** (M1 or later), **macOS 15 Sequoia** or later. Nativ
 3. Edit what you need; use **Edit → Undo** if needed, and **Tools** for comparisons and searches.
 4. **File → Save a copy…** (⌘S) to write the modified plugin.
 
-### FAQ
+### Updates
 
-**Can I add a master to a plugin?**  
-Only to plugins made of FormLists (other records would need renumbering): use xEdit for the others.
+The app checks once a day whether a newer release exists on GitHub and offers to open the Nexus page, remind you later or skip that version. Nothing is downloaded or installed automatically. The full history is in [CHANGELOG.md](CHANGELOG.md).
 
-### Building from source
+## Build
 
 Requires Xcode (Swift 6). From the repository folder:
 
@@ -90,13 +81,32 @@ Requires Xcode (Swift 6). From the repository folder:
 ./build_app.sh
 ```
 
-### License
+## Languages
 
-Released under the **MIT License**: free to use, modify and share. Part of the **Skyrim Mac Toolkit**, a set of modding tools built for Skyrim players on Mac.
+English, French, Spanish and Italian. The app follows your Mac's preferred language automatically (English if it is none of these four).
+
+## Support
+
+💬 Help and community: [Skyrim Mac Toolkit Discord](https://discord.gg/jRS4rvynx6) · bug reports: [GitHub Issues](https://github.com/starbudweiser/pLUGINSLENS/issues).
+
+### FAQ
+
+**Can I add a master to a plugin?**  
+Only to plugins made of FormLists (other records would need renumbering): use xEdit for the others.
+
+## License
+
+Released under the **MIT License**: free to use, modify and share. Part of the **Skyrim Mac Toolkit**, a set of modding tools built for Skyrim players on Mac. See [LICENSE](LICENSE).
 
 ---
 
-## 🇫🇷 Français
+## Français
+
+**Éditeur de plugins Skyrim (.esp / .esm / .esl) pour macOS : parcourir, comparer et modifier les enregistrements.**
+
+🍏 *Appli Mac native écrite en Swift, signée et notarisée par Apple.*
+
+💬 Aide et communauté : [Discord du Skyrim Mac Toolkit](https://discord.gg/jRS4rvynx6)
 
 ### À quoi ça sert
 
