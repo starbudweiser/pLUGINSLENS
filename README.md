@@ -2,6 +2,8 @@
 
 # pLUGINSLENS
 
+[![Listed on OpenMacApps](https://openmacapps.com/badge.svg)](https://openmacapps.com/apps/pluginslens/)
+
 **Skyrim plugin editor (.esp / .esm / .esl) for macOS: browse, compare and edit records.**  
 *Éditeur de plugins Skyrim (.esp / .esm / .esl) pour macOS : parcourir, comparer et modifier les enregistrements.*
 
