@@ -241,4 +241,5 @@ let translations: [String: [String]] = [
     "groupe de taille invalide ({sz})": ["invalid group size ({sz})", "dimensione del gruppo non valida ({sz})", "tamaño de grupo no válido ({sz})"],
     "A :": ["A:", "A:", "A:"],
     "B :": ["B:", "B:", "B:"],
+    "{n} octet": ["{n} byte", "{n} byte", "{n} byte"],
 ]
