@@ -484,11 +484,6 @@
   "Master leggero (ESL)",
   "Máster ligero (ESL)"
  ],
- "Entrées ({n}). Glissez des enregistrements depuis l'arbre, y compris d'autres plugins ouverts.": [
-  "Entries ({n}). Drag records from the tree, including from other open plugins.",
-  "Voci ({n}). Trascina record dall'albero, anche da altri plugin aperti.",
-  "Entradas ({n}). Arrastra registros desde el árbol, incluso de otros plugins abiertos."
- ],
  "Vide. Déposez des enregistrements ici.": [
   "Empty. Drop records here.",
   "Vuota. Trascina qui dei record.",
@@ -544,21 +539,6 @@
   "EditorID se noto, altrimenti FormID esadecimale.",
   "EditorID cuando se conoce; si no, FormID hexadecimal."
  ],
- "{v} entrée(s) ajoutée(s)": [
-  "{v} entry(ies) added",
-  "{v} voce/i aggiunta/e",
-  "{v} entrada(s) añadida(s)"
- ],
- "{k} entrée(s) retirée(s)": [
-  "{k} entry(ies) removed",
-  "{k} voce/i rimossa/e",
-  "{k} entrada(s) quitada(s)"
- ],
- "Introuvables ({n}) :\n": [
-  "Not found ({n}):\n",
-  "Non trovati ({n}):\n",
-  "No encontrados ({n}):\n"
- ],
  "Variable globale": [
   "Global variable",
   "Variabile globale",
@@ -568,11 +548,6 @@
   "All globals store their value as a float, whatever their type.",
   "Tutte le globali memorizzano il valore come float, qualunque sia il tipo.",
   "Todas las globales guardan su valor como float, sea cual sea su tipo."
- ],
- "Mots-clés ({n})": [
-  "Keywords ({n})",
-  "Parole chiave ({n})",
-  "Palabras clave ({n})"
  ],
  "Ce mot-clé est déjà présent": [
   "This keyword is already present",
@@ -613,11 +588,6 @@
   "Add {o} as a master of {name}?",
   "Aggiungere {o} come master di {name}?",
   "¿Añadir {o} como máster de {name}?"
- ],
- "{n} enregistrement(s) ajouté(s) à {label}": [
-  "{n} record(s) added to {label}",
-  "{n} record aggiunto/i a {label}",
-  "{n} registro(s) añadido(s) a {label}"
  ],
  " ({dup} déjà dans la liste)": [
   " ({dup} already in the list)",
@@ -699,16 +669,6 @@
   "Voci non valide rimosse da {label}",
   "Entradas rotas quitadas de {label}"
  ],
- "Ajouté {n} entrée(s) à {label}": [
-  "Added {n} entry(ies) to {label}",
-  "Aggiunta/e {n} voce/i a {label}",
-  "Añadida(s) {n} entrada(s) a {label}"
- ],
- "Importé {raw} entrée(s) brute(s) dans {label}": [
-  "Imported {raw} raw entry(ies) into {label}",
-  "Importata/e {raw} voce/i grezza/e in {label}",
-  "Importada(s) {raw} entrada(s) en bruto en {label}"
- ],
  "Type modifié pour {label}": [
   "Type changed for {label}",
   "Tipo modificato per {label}",
@@ -724,11 +684,6 @@
   "Parole chiave modificate su {label}",
   "Palabras clave modificadas en {label}"
  ],
- "Ajouté {n} mot(s)-clé(s) à {label}": [
-  "Added {n} keyword(s) to {label}",
-  "Aggiunta/e {n} parola/e chiave a {label}",
-  "Añadida(s) {n} palabra(s) clave a {label}"
- ],
  "Mot-clé ajouté à {label}": [
   "Keyword added to {label}",
   "Parola chiave aggiunta a {label}",
@@ -738,11 +693,6 @@
   "Keyword removed from {label}",
   "Parola chiave rimossa da {label}",
   "Palabra clave quitada de {label}"
- ],
- "Collé {n} enregistrement(s)": [
-  "Pasted {n} record(s)",
-  "Incollato/i {n} record",
-  "Pegado(s) {n} registro(s)"
  ],
  "Enregistrer une copie": [
   "Save a copy",
@@ -779,11 +729,6 @@
   "{name} ha modifiche non salvate. Chiuderlo comunque?",
   "{name} tiene cambios sin guardar. ¿Cerrarlo de todos modos?"
  ],
- " ({others} autre(s) plugin(s) ont aussi des modifications non enregistrées.)": [
-  " ({others} other plugin(s) also have unsaved changes.)",
-  " (anche {others} altro/i plugin ha/hanno modifiche non salvate.)",
-  " (otros {others} plugin(s) también tienen cambios sin guardar.)"
- ],
  "Plugin fermé.": [
   "Plugin closed.",
   "Plugin chiuso.",
@@ -808,11 +753,6 @@
   "\n\nQuit anyway?",
   "\n\nUscire comunque?",
   "\n\n¿Salir de todos modos?"
- ],
- "{n} plugin(s) restauré(s) depuis votre dernière session": [
-  "{n} plugin(s) restored from your last session",
-  "{n} plugin ripristinato/i dall'ultima sessione",
-  "{n} plugin(s) restaurado(s) de tu última sesión"
  ],
  "Ouvrez d'abord des plugins": [
   "Open some plugins first",
@@ -859,25 +799,10 @@
   "Seleziona prima dei record",
   "Selecciona primero algunos registros"
  ],
- "{n} enregistrement(s) copié(s)": [
-  "{n} record(s) copied",
-  "{n} record copiato/i",
-  "{n} registro(s) copiado(s)"
- ],
- " ({skipped} ignoré(s))": [
-  " ({skipped} skipped)",
-  " ({skipped} ignorato/i)",
-  " ({skipped} omitido(s))"
- ],
  "Rien n'a encore été copié": [
   "Nothing has been copied yet",
   "Non è ancora stato copiato nulla",
   "Todavía no se ha copiado nada"
- ],
- "{n} enregistrement(s) collé(s) dans {name}": [
-  "{n} record(s) pasted into {name}",
-  "{n} record incollato/i in {name}",
-  "{n} registro(s) pegado(s) en {name}"
  ],
  "EditorID de la nouvelle FormList dans {name} :": [
   "EditorID of the new FormList in {name}:",
@@ -1169,11 +1094,6 @@
   "Legge, modifica e confronta i plugin di Skyrim (.esp / .esm / .esl): record, FormList, annullamento.",
   "Lee, edita y compara los plugins de Skyrim (.esp / .esm / .esl): registros, FormLists, deshacer."
  ],
- "{name} · {v} enregistrements · {n} maîtres": [
-  "{name} · {v} records · {n} masters",
-  "{name} · {v} record · {n} master",
-  "{name} · {v} registros · {n} másteres"
- ],
  "données tronquées ({w})": [
   "truncated data ({w})",
   "dati troncati ({w})",
@@ -1203,5 +1123,195 @@
   "{n} byte",
   "{n} byte",
   "{n} byte"
+ ],
+ "Ajouté {n} entrée à {label}": [
+  "Added {n} entry to {label}",
+  "Aggiunta {n} voce a {label}",
+  "Añadida {n} entrada a {label}"
+ ],
+ "Ajouté {n} entrées à {label}": [
+  "Added {n} entries to {label}",
+  "Aggiunte {n} voci a {label}",
+  "Añadidas {n} entradas a {label}"
+ ],
+ "{n} enregistrement ajouté à {label}": [
+  "{n} record added to {label}",
+  "{n} record aggiunto a {label}",
+  "{n} registro añadido a {label}"
+ ],
+ "{n} enregistrements ajoutés à {label}": [
+  "{n} records added to {label}",
+  "{n} record aggiunti a {label}",
+  "{n} registros añadidos a {label}"
+ ],
+ "{n} entrée retirée": [
+  "{n} entry removed",
+  "{n} voce rimossa",
+  "{n} entrada quitada"
+ ],
+ "{n} entrées retirées": [
+  "{n} entries removed",
+  "{n} voci rimosse",
+  "{n} entradas quitadas"
+ ],
+ "Importé {n} entrée brute dans {label}": [
+  "Imported {n} raw entry into {label}",
+  "Importata {n} voce grezza in {label}",
+  "Importada {n} entrada en bruto en {label}"
+ ],
+ "Importé {n} entrées brutes dans {label}": [
+  "Imported {n} raw entries into {label}",
+  "Importate {n} voci grezze in {label}",
+  "Importadas {n} entradas en bruto en {label}"
+ ],
+ "{n} entrée ajoutée": [
+  "{n} entry added",
+  "{n} voce aggiunta",
+  "{n} entrada añadida"
+ ],
+ "{n} entrées ajoutées": [
+  "{n} entries added",
+  "{n} voci aggiunte",
+  "{n} entradas añadidas"
+ ],
+ "Introuvable ({n}) :\n": [
+  "Not found ({n}):\n",
+  "Non trovato ({n}):\n",
+  "No encontrado ({n}):\n"
+ ],
+ "Introuvables ({n}) :\n": [
+  "Not found ({n}):\n",
+  "Non trovati ({n}):\n",
+  "No encontrados ({n}):\n"
+ ],
+ "Mot-clé ({n})": [
+  "Keyword ({n})",
+  "Parola chiave ({n})",
+  "Palabra clave ({n})"
+ ],
+ "Mots-clés ({n})": [
+  "Keywords ({n})",
+  "Parole chiave ({n})",
+  "Palabras clave ({n})"
+ ],
+ "Ajouté {n} mot-clé à {label}": [
+  "Added {n} keyword to {label}",
+  "Aggiunta {n} parola chiave a {label}",
+  "Añadida {n} palabra clave a {label}"
+ ],
+ "Ajouté {n} mots-clés à {label}": [
+  "Added {n} keywords to {label}",
+  "Aggiunte {n} parole chiave a {label}",
+  "Añadidas {n} palabras clave a {label}"
+ ],
+ "{n} plugin restauré depuis votre dernière session": [
+  "{n} plugin restored from your last session",
+  "{n} plugin ripristinato dall'ultima sessione",
+  "{n} plugin restaurado de tu última sesión"
+ ],
+ "{n} plugins restaurés depuis votre dernière session": [
+  "{n} plugins restored from your last session",
+  "{n} plugin ripristinati dall'ultima sessione",
+  "{n} plugins restaurados de tu última sesión"
+ ],
+ "{n} enregistrement copié": [
+  "{n} record copied",
+  "{n} record copiato",
+  "{n} registro copiado"
+ ],
+ "{n} enregistrements copiés": [
+  "{n} records copied",
+  "{n} record copiati",
+  "{n} registros copiados"
+ ],
+ " ({n} ignoré)": [
+  " ({n} skipped)",
+  " ({n} ignorato)",
+  " ({n} omitido)"
+ ],
+ " ({n} ignorés)": [
+  " ({n} skipped)",
+  " ({n} ignorati)",
+  " ({n} omitidos)"
+ ],
+ "Collé {n} enregistrement": [
+  "Pasted {n} record",
+  "Incollato {n} record",
+  "Pegado {n} registro"
+ ],
+ "Collé {n} enregistrements": [
+  "Pasted {n} records",
+  "Incollati {n} record",
+  "Pegados {n} registros"
+ ],
+ "{n} enregistrement collé dans {name}": [
+  "{n} record pasted into {name}",
+  "{n} record incollato in {name}",
+  "{n} registro pegado en {name}"
+ ],
+ "{n} enregistrements collés dans {name}": [
+  "{n} records pasted into {name}",
+  "{n} record incollati in {name}",
+  "{n} registros pegados en {name}"
+ ],
+ " ({n} autre plugin a aussi des modifications non enregistrées.)": [
+  " ({n} other plugin also has unsaved changes.)",
+  " (anche {n} altro plugin ha modifiche non salvate.)",
+  " ({n} plugin más también tiene cambios sin guardar.)"
+ ],
+ " ({n} autres plugins ont aussi des modifications non enregistrées.)": [
+  " ({n} other plugins also have unsaved changes.)",
+  " (anche altri {n} plugin hanno modifiche non salvate.)",
+  " (otros {n} plugins también tienen cambios sin guardar.)"
+ ],
+ "{n} plugin ouvert": [
+  "{n} plugin open",
+  "{n} plugin aperto",
+  "{n} plugin abierto"
+ ],
+ " · {n} plugin ouvert": [
+  " · {n} plugin open",
+  " · {n} plugin aperto",
+  " · {n} plugin abierto"
+ ],
+ "{n} enregistrement": [
+  "{n} record",
+  "{n} record",
+  "{n} registro"
+ ],
+ "{n} enregistrements": [
+  "{n} records",
+  "{n} record",
+  "{n} registros"
+ ],
+ "{n} maître": [
+  "{n} master",
+  "{n} master",
+  "{n} máster"
+ ],
+ "{n} maîtres": [
+  "{n} masters",
+  "{n} master",
+  "{n} másteres"
+ ],
+ "Entrée ({n}). Glissez des enregistrements depuis l'arbre, y compris d'autres plugins ouverts.": [
+  "Entry ({n}). Drag records from the tree, including from other open plugins.",
+  "Voce ({n}). Trascina record dall'albero, anche da altri plugin aperti.",
+  "Entrada ({n}). Arrastra registros desde el árbol, incluso de otros plugins abiertos."
+ ],
+ "Entrées ({n}). Glissez des enregistrements depuis l'arbre, y compris d'autres plugins ouverts.": [
+  "Entries ({n}). Drag records from the tree, including from other open plugins.",
+  "Voci ({n}). Trascina record dall'albero, anche da altri plugin aperti.",
+  "Entradas ({n}). Arrastra registros desde el árbol, incluso de otros plugins abiertos."
+ ],
+ "{name} · {v} · {m}": [
+  "{name} · {v} · {m}",
+  "{name} · {v} · {m}",
+  "{name} · {v} · {m}"
+ ],
+ "Aucun mot-clé.": [
+  "No keywords.",
+  "Nessuna parola chiave.",
+  "Sin palabras clave."
  ]
 }

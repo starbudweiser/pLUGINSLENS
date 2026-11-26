@@ -31,17 +31,19 @@ struct RecordDropDelegate: DropDelegate {
 }
 
 extension View {
-    /// Panneau qui accepte les enregistrements glissés (contour pointillé au survol).
+    /// Panneau qui accepte les enregistrements glissés (fond neutre au survol, sans contour).
     func recordDrop(perform: @escaping () -> Void) -> some View { modifier(RecordDropModifier(perform: perform)) }
 }
 
 struct RecordDropModifier: ViewModifier {
     let perform: () -> Void
     @State private var over = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     func body(content: Content) -> some View {
         content
-            .overlay(Rectangle().strokeBorder(Socle.C.accent, style: StrokeStyle(lineWidth: 1, dash: [4, 3])).opacity(over ? 1 : 0).allowsHitTesting(false))
+            .overlay(Rectangle().fill(Socle.C.surfaceSelected).opacity(over ? 0.55 : 0).allowsHitTesting(false)
+                .animation(reduceMotion ? nil : .easeOut(duration: Interaction.duration), value: over))
             .onDrop(of: [.plainText], delegate: RecordDropDelegate(over: $over, perform: perform))
     }
 }
@@ -140,7 +142,7 @@ struct RecordPage: View {
                 }
                 Spacer(minLength: 0)
             }
-            MetaText(text: L("{name} · Propriétaire : {owner}", ["name": P.name, "owner": owner(r.id, P)]))
+            MetaText(text: L("{name} · Propriétaire : {owner}", ["name": P.name, "owner": owner(r.id, P)]), middle: true)
             HStack(spacing: Socle.M.space2) {
                 SmallButton(L("Ajouter un sous-enregistrement"), enabled: !P.locked) { model.addSub(r) }
                 SmallButton(L("Cloner"), enabled: !P.locked) { model.cloneRecord(r) }
@@ -257,7 +259,7 @@ struct SubEditor: View {
             VStack(alignment: .leading, spacing: 4) {
                 HStack(spacing: 8) {
                     MonoLabel(text: s.t)
-                    MetaText(text: L("{n} octets", ["n": s.d.count]))
+                    MetaText(text: plur(s.d.count, "{n} octet", "{n} octets")).socleNumber(value: s.d.count)
                     MetaText(text: u32Hint(s.d))
                     Spacer(minLength: 0)
                     SmallButton(mode == "t" ? L("Hexadécimal") : L("Texte")) { flip() }
@@ -337,9 +339,10 @@ struct RecordLink: View {
     let action: () -> Void
     var body: some View {
         Button(action: action) {
-            Text(text).socle(Socle.T.body).foregroundStyle(Socle.C.accentText).frame(maxWidth: .infinity, alignment: .leading).contentShape(Rectangle())
+            Text(text).socle(Socle.T.body).foregroundStyle(Socle.C.accentText).socleMiddleTruncated(text)
+                .frame(maxWidth: .infinity, alignment: .leading).contentShape(Rectangle())
         }
-        .buttonStyle(.plain)
+        .buttonStyle(SocleSelectableStyle())
     }
 }
 
@@ -353,8 +356,8 @@ struct FormListPanel: View {
     var body: some View {
         let ents = model.ws.flEntries(r)
         Panel {
-            Text(L("Entrées ({n}). Glissez des enregistrements depuis l'arbre, y compris d'autres plugins ouverts.", ["n": ents.count]))
-                .socle(Socle.T.title).foregroundStyle(Socle.C.textStrong)
+            Text(plur(ents.count, "Entrée ({n}). Glissez des enregistrements depuis l'arbre, y compris d'autres plugins ouverts.", "Entrées ({n}). Glissez des enregistrements depuis l'arbre, y compris d'autres plugins ouverts."))
+                .socle(Socle.T.title).foregroundStyle(Socle.C.textStrong).socleNumber(value: ents.count)
             HStack(spacing: Socle.M.space2) {
                 SmallButton(L("Importer…"), enabled: !P.locked) { importList() }
                 SmallButton(L("Exporter…")) { exportList() }
@@ -409,7 +412,7 @@ struct FormListPanel: View {
         let k = model.ws.flSet(r, lst)
         model.setDirty(P, msg ?? L("Entrées réordonnées dans {label}", ["label": label(r)]))
         model.showRecord(r)
-        if k > 0 { model.flash(L("{k} entrée(s) retirée(s)", ["k": k])) }
+        if k > 0 { model.flash(plur(k, "{n} entrée retirée", "{n} entrées retirées")) }
     }
 
     private func move(_ a: Sub, _ b: Sub) {
@@ -426,15 +429,15 @@ struct FormListPanel: View {
             guard let text else { return }
             let res = model.ws.importList(r, text)
             if res.changed {
-                model.setDirty(P, L("Ajouté {n} entrée(s) à {label}", ["n": res.n, "label": label(r)]))
+                model.setDirty(P, plur(res.n, "Ajouté {n} entrée à {label}", "Ajouté {n} entrées à {label}", ["label": label(r)]))
             } else if res.raw > 0 {
-                model.setDirty(P, L("Importé {raw} entrée(s) brute(s) dans {label}", ["raw": res.raw, "label": label(r)]))
+                model.setDirty(P, plur(res.raw, "Importé {n} entrée brute dans {label}", "Importé {n} entrées brutes dans {label}", ["label": label(r)]))
             }
             if !res.warn.isEmpty { model.alert(res.warn.joined(separator: "\n\n")) }
             model.showRecord(r)
-            model.flash(L("{v} entrée(s) ajoutée(s)", ["v": res.n + res.raw]))
+            model.flash(plur(res.n + res.raw, "{n} entrée ajoutée", "{n} entrées ajoutées"))
             if !res.bad.isEmpty {
-                model.alert(L("Introuvables ({n}) :\n", ["n": res.bad.count]) + res.bad.prefix(30).joined(separator: "\n") + (res.bad.count > 30 ? "\n…" : ""))
+                model.alert(plur(res.bad.count, "Introuvable ({n}) :\n", "Introuvables ({n}) :\n") + res.bad.prefix(30).joined(separator: "\n") + (res.bad.count > 30 ? "\n…" : ""))
             }
         }
     }
@@ -533,7 +536,11 @@ struct KeywordPanel: View {
     var body: some View {
         let ids = Workspace.keywords(r)
         Panel {
-            Text(L("Mots-clés ({n})", ["n": ids.count])).socle(Socle.T.title).foregroundStyle(Socle.C.textStrong)
+            Text(plur(ids.count, "Mot-clé ({n})", "Mots-clés ({n})")).socle(Socle.T.title).foregroundStyle(Socle.C.textStrong)
+                .socleNumber(value: ids.count)
+            if ids.isEmpty {
+                Text(L("Aucun mot-clé.")).socle(Socle.T.body).foregroundStyle(Socle.C.textMuted)
+            }
             ForEach(Array(ids.enumerated()), id: \.offset) { i, v in
                 let t = model.ws.resolve(P, v)
                 HStack(spacing: 8) {
@@ -571,7 +578,7 @@ struct KeywordPanel: View {
             guard case .id(let id) = model.ws.xref(src, P) else { continue }
             if !lst.contains(id) { lst.append(id); n += 1 }
         }
-        if n > 0 { setv(lst, L("Ajouté {n} mot(s)-clé(s) à {label}", ["n": n, "label": label(r)])) }
+        if n > 0 { setv(lst, plur(n, "Ajouté {n} mot-clé à {label}", "Ajouté {n} mots-clés à {label}", ["label": label(r)])) }
     }
 
     private func add() {

@@ -173,7 +173,14 @@ struct SmallButton: View {
 
 struct MetaText: View {
     let text: String
-    var body: some View { Text(Socle.branded(text)).socle(Socle.T.meta).foregroundStyle(Socle.C.textMuted).fixedSize(horizontal: false, vertical: true) }
+    var middle = false
+    var body: some View {
+        if middle {
+            Text(Socle.branded(text)).socle(Socle.T.meta).foregroundStyle(Socle.C.textMuted).socleMiddleTruncated(text)
+        } else {
+            Text(Socle.branded(text)).socle(Socle.T.meta).foregroundStyle(Socle.C.textMuted).fixedSize(horizontal: false, vertical: true)
+        }
+    }
 }
 
 // MARK: PickDialog
@@ -206,12 +213,13 @@ struct PickView: View {
                     }
                     ForEach(Array(res.recs.enumerated()), id: \.offset) { _, r in
                         Button { pick(r) } label: {
-                            Text("\(hexs(r.id))   \(r.t)  \(edid(r))" + (many ? "   (\(r.plugin!.name))" : ""))
-                                .socle(Socle.T.mono).foregroundStyle(Socle.C.text)
+                            let line = "\(hexs(r.id))   \(r.t)  \(edid(r))" + (many ? "   (\(r.plugin!.name))" : "")
+                            Text(line)
+                                .socle(Socle.T.mono).foregroundStyle(Socle.C.text).socleMiddleTruncated(line)
                                 .frame(maxWidth: .infinity, alignment: .leading).padding(.vertical, 3).padding(.horizontal, 6)
                                 .contentShape(Rectangle())
                         }
-                        .buttonStyle(.plain)
+                        .buttonStyle(SocleSelectableStyle())
                     }
                 }
             }
@@ -256,6 +264,9 @@ struct ListView<Top: View>: View {
             top
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 0) {
+                    if data.items.isEmpty {
+                        Text(L("Aucun résultat")).socle(Socle.T.body).foregroundStyle(Socle.C.textMuted).padding(6)
+                    }
                     ForEach(data.items) { it in
                         switch it.kind {
                         case .section(let t):
@@ -264,11 +275,12 @@ struct ListView<Top: View>: View {
                             Text(t).socle(Socle.T.body).foregroundStyle(Socle.C.textMuted).padding(6)
                         case .record(let r, let extra):
                             Button { go(r) } label: {
-                                Text("\(hexs(r.id))   \(r.t)  \(edid(r))\(extra)").socle(Socle.T.mono).foregroundStyle(Socle.C.text)
+                                let line = "\(hexs(r.id))   \(r.t)  \(edid(r))\(extra)"
+                                Text(line).socle(Socle.T.mono).foregroundStyle(Socle.C.text).socleMiddleTruncated(line)
                                     .frame(maxWidth: .infinity, alignment: .leading).padding(.vertical, 3).padding(.horizontal, 6)
                                     .contentShape(Rectangle())
                             }
-                            .buttonStyle(.plain)
+                            .buttonStyle(SocleSelectableStyle())
                         }
                     }
                 }

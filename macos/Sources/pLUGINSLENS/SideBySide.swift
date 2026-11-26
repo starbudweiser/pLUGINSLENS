@@ -50,7 +50,8 @@ struct SideBySideView: View {
     private func slot(_ title: String, _ r: Record?, set: @escaping (Record?) -> Void) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(title.uppercased()).socle(Socle.T.eyebrow).foregroundStyle(Socle.C.textSubtle)
-            Text(r.map { "\($0.t)  \(label($0))  (\($0.plugin!.name))" } ?? "").socle(Socle.T.body).foregroundStyle(Socle.C.text).lineLimit(1)
+            let full = r.map { "\($0.t)  \(label($0))  (\($0.plugin!.name))" } ?? ""
+            Text(full).socle(Socle.T.body).foregroundStyle(Socle.C.text).socleMiddleTruncated(full)
             SmallButton(r != nil ? L("Changer…") : L("Choisir un enregistrement…")) {
                 model.pickRecord { t in
                     if let t { set(t); sbs.rev += 1 }

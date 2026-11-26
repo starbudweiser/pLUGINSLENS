@@ -90,7 +90,8 @@ struct ContentView: View {
                 }
             Text(Socle.branded(model.statusText)).socle(Socle.T.meta)
                 .foregroundStyle(model.statusTone == .warning ? Socle.C.warning : model.statusTone == .danger ? Socle.C.danger : Socle.C.textMuted)
-                .lineLimit(1).truncationMode(.tail).frame(maxWidth: .infinity, alignment: .leading)
+                .socleNumber(value: model.statusText)
+                .lineLimit(1).truncationMode(.middle).help(model.statusText).frame(maxWidth: .infinity, alignment: .leading)
         }
         .padding(.horizontal, 10).padding(.vertical, 6)
         .background(Socle.C.surface, in: RoundedRectangle(cornerRadius: Socle.M.radiusMd))

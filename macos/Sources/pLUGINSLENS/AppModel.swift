@@ -134,10 +134,12 @@ final class AppModel {
         let P = active, n = ws.plugins.count
         if n == 0 { return L("Aucun fichier chargé") }
         if let P {
-            return L("{name} · {v} enregistrements · {n} maîtres", ["name": P.name, "v": fmtInt(P.all.count - 1), "n": P.masters.count])
-                + (P.dirty ? L(" · modifié") : "") + (n > 1 ? L(" · {n} plugins ouverts", ["n": n]) : "")
+            return L("{name} · {v} · {m}", ["name": P.name,
+                                            "v": plur(P.all.count - 1, "{n} enregistrement", "{n} enregistrements"),
+                                            "m": plur(P.masters.count, "{n} maître", "{n} maîtres")])
+                + (P.dirty ? L(" · modifié") : "") + (n > 1 ? plur(n, " · {n} plugin ouvert", " · {n} plugins ouverts") : "")
         }
-        return L("{n} plugins ouverts", ["n": n])
+        return plur(n, "{n} plugin ouvert", "{n} plugins ouverts")
     }
 
     var statusTone: StatusTone {
@@ -189,12 +191,12 @@ final class AppModel {
         if locked(P) { return }
         let res = ws.addEntries(fl, recs)
         if res.changed {
-            setDirty(P, L("Ajouté {n} entrée(s) à {label}", ["n": res.n, "label": label(fl)]))
+            setDirty(P, plur(res.n, "Ajouté {n} entrée à {label}", "Ajouté {n} entrées à {label}", ["label": label(fl)]))
             tree?.refreshIds(P)
             if let c = cur, c.plugin === P { showRecord(c) }
         }
         if !res.warn.isEmpty { alert(res.warn.joined(separator: "\n\n")) }
-        flash(L("{n} enregistrement(s) ajouté(s) à {label}", ["n": res.n, "label": label(fl)])
+        flash(plur(res.n, "{n} enregistrement ajouté à {label}", "{n} enregistrements ajoutés à {label}", ["label": label(fl)])
             + (res.dup > 0 ? L(" ({dup} déjà dans la liste)", ["dup": res.dup]) : ""))
     }
 
@@ -401,7 +403,7 @@ final class AppModel {
         if askFirst && P.dirty {
             let others = ws.plugins.filter { $0 !== P && $0.dirty }.count
             var msg = L("{name} a des modifications non enregistrées. Le fermer quand même ?", ["name": P.name])
-            if others > 0 { msg += L(" ({others} autre(s) plugin(s) ont aussi des modifications non enregistrées.)", ["others": others]) }
+            if others > 0 { msg += plur(others, " ({n} autre plugin a aussi des modifications non enregistrées.)", " ({n} autres plugins ont aussi des modifications non enregistrées.)") }
             if !ask(msg) { return false }
         }
         let id = ObjectIdentifier(P)
@@ -483,7 +485,7 @@ final class AppModel {
                 if P != nil { restored += 1 }
                 pending -= 1
                 if pending == 0, restored > 0 {
-                    self?.flash(L("{n} plugin(s) restauré(s) depuis votre dernière session", ["n": restored]))
+                    self?.flash(plur(restored, "{n} plugin restauré depuis votre dernière session", "{n} plugins restaurés depuis votre dernière session"))
                 }
             }
         }
@@ -560,7 +562,7 @@ final class AppModel {
             return
         }
         clip = items
-        flash(L("{n} enregistrement(s) copié(s)", ["n": items.count]) + (skipped > 0 ? L(" ({skipped} ignoré(s))", ["skipped": skipped]) : ""))
+        flash(plur(items.count, "{n} enregistrement copié", "{n} enregistrements copiés") + (skipped > 0 ? plur(skipped, " ({n} ignoré)", " ({n} ignorés)") : ""))
     }
 
     func pasteRecords() {
@@ -568,10 +570,10 @@ final class AppModel {
         if clip.isEmpty { flash(L("Rien n'a encore été copié")); return }
         let res = ws.pasteRecords(P, clip)
         if res.changed {
-            setDirty(P, L("Collé {n} enregistrement(s)", ["n": res.n]))
+            setDirty(P, plur(res.n, "Collé {n} enregistrement", "Collé {n} enregistrements"))
             tree?.reload()
             tree?.expand(P)
-            flash(L("{n} enregistrement(s) collé(s) dans {name}", ["n": res.n, "name": P.name]))
+            flash(plur(res.n, "{n} enregistrement collé dans {name}", "{n} enregistrements collés dans {name}", ["name": P.name]))
         }
         if !res.warn.isEmpty { alert(res.warn.joined(separator: "\n\n")) }
     }

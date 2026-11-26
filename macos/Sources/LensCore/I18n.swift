@@ -58,7 +58,7 @@ public func L(_ text: String, _ kw: [String: Any] = [:]) -> String {
     while let open = rest.firstIndex(of: "{") {
         result += rest[..<open]
         if let close = rest[open...].firstIndex(of: "}"), let v = kw[String(rest[rest.index(after: open)..<close])] {
-            result += "\(v)"
+            result += (v as? Int).map { fmtInt($0) } ?? "\(v)"
             rest = rest[rest.index(after: close)...]
         } else {
             result.append("{")
@@ -76,6 +76,9 @@ public func P(_ n: Int, _ one: String, _ many: String, _ kw: [String: Any] = [:]
     kw["n"] = fmtInt(n)
     return L(singular ? one : many, kw)
 }
+
+/// Synonyme de `P` pour les fichiers où un `P` (le plugin courant) masque la fonction.
+public func plur(_ n: Int, _ one: String, _ many: String, _ kw: [String: Any] = [:]) -> String { P(n, one, many, kw) }
 
 /// 12345 → « 12 345 » (fr), « 12,345 » (en), « 12.345 » (it, es).
 public func fmtInt(_ n: Int) -> String {

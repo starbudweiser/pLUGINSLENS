@@ -378,7 +378,12 @@ final class TreeController: NSObject, NSOutlineViewDataSource, NSOutlineViewDele
         }
     }
 
-    func outlineView(_ outlineView: NSOutlineView, rowViewForItem item: Any) -> NSTableRowView? { SocleRowView() }
+    func outlineView(_ outlineView: NSOutlineView, rowViewForItem item: Any) -> NSTableRowView? {
+        switch (item as! TreeItem).kind {
+        case .section, .info: return SocleRowView(hoverable: false)
+        default: return SocleRowView(hoverable: true)
+        }
+    }
 
     private func textCell(_ text: String, font: NSFont, color: NSColor) -> NSView {
         let f = NSTextField(labelWithString: text)
@@ -386,6 +391,7 @@ final class TreeController: NSObject, NSOutlineViewDataSource, NSOutlineViewDele
         f.textColor = color
         f.lineBreakMode = .byTruncatingTail
         let v = NSTableCellView()
+        v.toolTip = text
         v.addSubview(f)
         f.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -394,13 +400,6 @@ final class TreeController: NSObject, NSOutlineViewDataSource, NSOutlineViewDele
             f.centerYAnchor.constraint(equalTo: v.centerYAnchor),
         ])
         return v
-    }
-}
-
-final class SocleRowView: NSTableRowView {
-    override func drawSelection(in dirtyRect: NSRect) {
-        NSColor(Socle.C.surfaceSelected).setFill()
-        bounds.fill()
     }
 }
 
@@ -415,6 +414,7 @@ private func mono(_ s: String, _ color: Color) -> NSTextField {
 final class RecordCell: NSTableCellView {
     init(_ r: Record, showPlugin: Bool) {
         super.init(frame: .zero)
+        toolTip = "\(r.t)  \(edid(r))  \(hexs(r.id))" + (showPlugin ? "  (\(r.plugin!.name))" : "")
         let type = mono(r.t, Socle.C.accentText)
         let name = NSTextField(labelWithString: edid(r))
         name.font = Socle.T.body.nsFont
@@ -447,6 +447,7 @@ final class PluginCell: NSTableCellView {
         self.model = model
         plugin = P
         super.init(frame: .zero)
+        toolTip = P.name
         let lab = NSTextField(labelWithString: P.name + (P.dirty ? " •" : "") + (P.locked ? L("   (verrouillé)") : ""))
         lab.font = Socle.T.labelStrong.nsFont
         lab.textColor = NSColor(Socle.C.textStrong)

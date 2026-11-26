@@ -27,12 +27,17 @@ final class I18nTests: XCTestCase {
                 keys.insert(k)
             }
         }
-        // P(n, "un", "plusieurs") : formes singulier et pluriel (I18n.swift est exclu du balayage ci-dessus).
-        let plural = try NSRegularExpression(pattern: #"(?<![A-Za-z_.])P\([^,]+,\s*"((?:[^"\\]|\\.)*)",\s*"((?:[^"\\]|\\.)*)""#)
-        for case let url as URL in FileManager.default.enumerator(at: root, includingPropertiesForKeys: nil)! where url.lastPathComponent == "I18n.swift" {
+        // P(n, "un", "plusieurs") et plur(...) : formes singulier et pluriel, dans toutes les sources.
+        let plural = try NSRegularExpression(pattern: #"(?<![A-Za-z_.])(?:P|plur)\([^,"]+,\s*"((?:[^"\\]|\\.)*)",\s*"((?:[^"\\]|\\.)*)""#)
+        for case let url as URL in FileManager.default.enumerator(at: root, includingPropertiesForKeys: nil)! where url.pathExtension == "swift" {
+            if url.lastPathComponent == "Strings.swift" { continue }
             let text = try String(contentsOf: url, encoding: .utf8)
             for m in plural.matches(in: text, range: NSRange(text.startIndex..., in: text)) {
-                for g in 1...2 { keys.insert(String(text[Range(m.range(at: g), in: text)!])) }
+                for g in 1...2 {
+                    var k = String(text[Range(m.range(at: g), in: text)!])
+                    k = k.replacingOccurrences(of: "\\n", with: "\n").replacingOccurrences(of: "\\\"", with: "\"").replacingOccurrences(of: "\\\\", with: "\\")
+                    keys.insert(k)
+                }
             }
         }
         return keys

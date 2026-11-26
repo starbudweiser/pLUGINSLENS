@@ -46,7 +46,7 @@ extension AppModel {
             for (title, lst) in [(L("Seulement dans {name}", ["name": B.name]), added),
                                  (L("Seulement dans {name}", ["name": A.name]), removed),
                                  (L("Modifiés (même EditorID, sous-enregistrements différents)"), changed)] where !lst.isEmpty {
-                d.section("\(title.uppercased()) (\(lst.count))")
+                d.section("\(title.uppercased()) (\(fmtInt(lst.count)))")
                 for r in lst.prefix(200) { d.record(r) }
             }
             if added.isEmpty && removed.isEmpty && changed.isEmpty { d.message(L("Aucune différence trouvée par EditorID.")) }
