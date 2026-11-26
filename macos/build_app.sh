@@ -9,7 +9,7 @@ ROOT="$(cd "$HERE/.." && pwd)"
 OUT_DIR="${1:-$ROOT}"
 APP_NAME="pLUGINSLENS"
 BUNDLE_ID="pLUGINSLENS"  # inchangé d'une version à l'autre : macOS garde les autorisations
-VERSION="2.0.0"
+VERSION="2.0.1"
 ICON="$ROOT/assets/icon.icns"
 APP="$OUT_DIR/$APP_NAME.app"
 
